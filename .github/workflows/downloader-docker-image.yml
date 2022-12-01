@@ -24,6 +24,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -34,7 +38,7 @@ jobs:
             linux/amd64
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:aria2
+             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:aria2-${{ steps.date.outputs.today }}
 
   qbittorrent:
     name: Build qBittorrent
@@ -56,6 +60,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -66,7 +74,7 @@ jobs:
             linux/amd64
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent
+             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent-${{ steps.date.outputs.today }}
 
   qbittorrent_skip_patch:
     name: Build qBittorrent_Skip_Patch
@@ -88,6 +96,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -98,7 +110,7 @@ jobs:
             linux/amd64
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent_skip_patch
+             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent_skip_patch-${{ steps.date.outputs.today }}
 
   transmission:
     name: Build Transmission
@@ -120,6 +132,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -130,7 +146,7 @@ jobs:
             linux/amd64
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission
+             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission-${{ steps.date.outputs.today }}
 
   transmission_skip_patch:
     name: Build Transmission_Skip_Patch
@@ -152,6 +168,10 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
+        
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -162,4 +182,4 @@ jobs:
             linux/amd64
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission_skip_patch
+             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission_skip_patch-${{ steps.date.outputs.today }}
