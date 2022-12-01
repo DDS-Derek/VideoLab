@@ -1,1 +1,0 @@
-FROM chisbread/transmission:latest
