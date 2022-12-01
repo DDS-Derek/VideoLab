@@ -36,6 +36,8 @@ jobs:
           file: downloader/aria2/Dockerfile
           platforms: |
             linux/amd64
+            linux/arm/v7
+            linux/arm64/v8
           push: true
           tags: |
              ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:aria2-${{ steps.date.outputs.today }}
@@ -72,6 +74,7 @@ jobs:
           file: downloader/qbittorrent/Dockerfile
           platforms: |
             linux/amd64
+            linux/arm64/v8
           push: true
           tags: |
              ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent-${{ steps.date.outputs.today }}
@@ -108,6 +111,8 @@ jobs:
           file: downloader/qbittorrent_skip_patch/Dockerfile
           platforms: |
             linux/amd64
+            linux/arm/v7
+            linux/arm64/v8
           push: true
           tags: |
              ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent_skip_patch-${{ steps.date.outputs.today }}
@@ -144,6 +149,8 @@ jobs:
           file: downloader/transmission/Dockerfile
           platforms: |
             linux/amd64
+            linux/arm/v7
+            linux/arm64/v8
           push: true
           tags: |
              ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission-${{ steps.date.outputs.today }}
@@ -171,7 +178,7 @@ jobs:
       - name: Get current date
         id: date
         run: echo "::set-output name=today::$(date +'%Y-%m-%d')"
-        
+
       - 
         name: Buildx
         uses: docker/build-push-action@v3
@@ -180,6 +187,8 @@ jobs:
           file: downloader/transmission_skip_patch/Dockerfile
           platforms: |
             linux/amd64
+            linux/arm/v7
+            linux/arm64/v8
           push: true
           tags: |
              ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission_skip_patch-${{ steps.date.outputs.today }}
