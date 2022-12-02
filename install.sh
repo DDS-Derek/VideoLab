@@ -225,17 +225,21 @@ show_basic_settings(){
 
 direct_install(){
 clear
-get_id
-clear
-get_umask
-clear
-get_tz
-clear
-get_config_dir
-get_download_dir
-get_media_dir
-clear
-show_basic_settings
+if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
+    get_id
+    clear
+    get_umask
+    clear
+    get_tz
+    clear
+    get_config_dir
+    get_download_dir
+    get_media_dir
+    clear
+    show_basic_settings
+else
+    fix_basic_settings
+fi
 }
 
 fix_basic_settings(){
