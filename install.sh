@@ -229,6 +229,7 @@ fix_basic_settings
 }
 
 fix_basic_settings(){
+clear
 if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     get_id
     clear
@@ -259,7 +260,6 @@ else
     NEW_download_dir=${Old_download_dir}
     NEW_media_dir=${Old_media_dir}
     NEW_config_dir=${Old_config_dir}
-
     show_basic_settings
 fi
 }
