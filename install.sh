@@ -238,7 +238,25 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     clear
     show_basic_settings
 else
-    fix_basic_settings
+    . /etc/nastools_all_in_one/settings.sh
+    . ${config_dir}/nastools_all_in_one/basic_settings.sh
+    Old_PUID=${PUID}
+    Old_PGID=${PGID}
+    Old_Umask=${Umask}
+    Old_TZ=${TZ}
+    Old_download_dir=${download_dir}
+    Old_media_dir=${media_dir}
+    Old_config_dir=${config_dir}
+
+    NEW_PUID=${Old_PUID}
+    NEW_PGID=${Old_PGID}
+    NEW_UMASK=${Old_Umask}
+    NEW_TZ=${Old_TZ}
+    NEW_download_dir=${Old_download_dir}
+    NEW_media_dir=${Old_media_dir}
+    NEW_config_dir=${Old_config_dir}
+
+    show_basic_settings
 fi
 }
 
