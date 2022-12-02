@@ -260,7 +260,7 @@ NEW_config_dir=${Old_config_dir}
 
 show_basic_settings
 
-bash <(wget )
+bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh')
 }
 
 
