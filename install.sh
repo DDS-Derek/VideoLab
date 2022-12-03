@@ -5,7 +5,7 @@ Font="\033[0m"
 Red="\033[31m" 
 Blue="\033[34m"
 
-BUILD_TIME=2022-12-01
+BUILD_TIME=2022-12-03
 
 #root权限
 root_need(){
@@ -550,7 +550,7 @@ fi
 
 tr_sk_install(){
 clear
-echo -e "${Blue}Transmission 安装${Font}\n"
+echo -e "${Blue}Transmission Skip Patch 安装${Font}\n"
 tr_web_port
 tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
@@ -563,24 +563,24 @@ read -p "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
 echo -e "${Green}设置成功！${Font}"
 
-if [ ! -d ${config_dir}/transmission ]; then
-    mkdir -p ${config_dir}/transmission
+if [ ! -d ${config_dir}/transmission_sk ]; then
+    mkdir -p ${config_dir}/transmission_sk
 fi
-if [ ! -d ${config_dir}/transmission/config ]; then
-    mkdir -p ${config_dir}/transmission/config
+if [ ! -d ${config_dir}/transmission_sk/config ]; then
+    mkdir -p ${config_dir}/transmission_sk/config
 fi
 
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
-    if [ ! -f ${config_dir}/transmission/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/transmission/docker-compose.yaml
+    if [ ! -f ${config_dir}/transmission_sk/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/transmission_sk/docker-compose.yaml
     fi
-    cat > ${config_dir}/transmission/docker-compose.yaml << EOF
+    cat > ${config_dir}/transmission_sk/docker-compose.yaml << EOF
 version: "2.1"
 services:
-  transmission:
+  transmission_sk:
     image: ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
-    container_name: transmission
+    container_name: transmission_sk
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -591,7 +591,7 @@ services:
       - DOWNLOAD_DIR=/downloads
       - PEERPORT=${tr_port_torrent}
     volumes:
-      - ${config_dir}/transmission/config:/config
+      - ${config_dir}/transmission_sk/config:/config
       - ${download_dir}:/downloads
     ports:
       - ${tr_port}:9091
@@ -599,13 +599,13 @@ services:
       - ${tr_port_torrent}:${tr_port_torrent}/udp
     restart: always
 EOF
-    cd ${config_dir}/transmission
+    cd ${config_dir}/transmission_sk
     docker compose up -d
 fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -d \
-    --name=transmission \
+    --name=transmission_sk \
     -e PUID=${PUID} \
     -e PGID=${PGID} \
     -e TZ=${TZ} \
@@ -617,16 +617,16 @@ if [[ ${docker_install_model} = 'cli' ]]; then
     -p ${tr_port}:9091 \
     -p ${tr_port_torrent}:${tr_port_torrent} \
     -p ${tr_port_torrent}:${tr_port_torrent}/udp \
-    -v ${config_dir}/transmission/config:/config \
+    -v ${config_dir}/transmission_sk/config:/config \
     -v ${download_dir}:/downloads \
     --restart always \
     ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
 fi
 
 if [ $? -eq 0 ]; then
-    echo -e "${Green}Transmission 安装成功${Font}"
+    echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
 else
-    echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
+    echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
     exit 1
 fi
 }
@@ -705,6 +705,106 @@ services:
 EOF
     cd ${config_dir}/qbittorrent
     docker compose up -d
+fi
+
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -dit \
+        -v $PWD/qbittorrent:/data \
+        -e PUID="${PUID}" \
+        -e PGID="${PGID}" \
+        -e TZ="${TZ}" \
+        -e WEBUI_PORT="${qb_port}" \
+        -e BT_PORT="${qb_port_torrent}" \
+        -p ${qb_port}:${qb_port} \
+        -p ${qb_port_torrent}:${qb_port_torrent}/tcp \
+        -p ${qb_port_torrent}:${qb_port_torrent}/udp \
+        --tmpfs /tmp \
+        --restart always \
+        --name qbittorrent \
+        --hostname qbittorrent \
+        ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
+fi
+
+if [ $? -eq 0 ]; then
+    echo -e "${Green}qBittorrent 安装成功${Font}"
+else
+    echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+    exit 1
+fi
+}
+
+qb_sk_install(){
+clear
+echo -e "${Blue}qBittorrent Skip Patch 安装${Font}\n"
+qb_web_port
+qb_port_torrent_i
+
+if [ ! -d ${config_dir}/qbittorrent_sk ]; then
+    mkdir -p ${config_dir}/qbittorrent_sk
+fi
+if [ ! -d ${config_dir}/qbittorrent_sk/config ]; then
+    mkdir -p ${config_dir}/qbittorrent_sk/config
+fi
+
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/qbittorrent_sk/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/qbittorrent_sk/docker-compose.yaml
+    fi
+    cat > ${config_dir}/qbittorrent_sk/docker-compose.yaml << EOF
+version: "2.0"
+services:
+  qbittorrent_sk:
+    image: ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
+    container_name: qbittorrent_sk
+    restart: always
+    tty: true
+    network_mode: bridge
+    hostname: qbittorrent_sk
+    volumes:
+      - ${config_dir}/qbittorrent_sk/config:/data
+      - ${download_dir}:/downloads
+    tmpfs:
+      - /tmp
+    environment:
+      - WEBUI_PORT=${qb_port}
+      - BT_PORT=${qb_port_torrent}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - ${qb_port}:${qb_port}
+      - ${qb_port_torrent}:${qb_port_torrent}
+      - ${qb_port_torrent}:${qb_port_torrent}/udp
+EOF
+    cd ${config_dir}/qbittorrent_sk
+    docker compose up -d
+fi
+
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -dit \
+        -v ${config_dir}/qbittorrent_sk/config:/data \
+        -e PUID="${PUID}" \
+        -e PGID="${PGID}" \
+        -e TZ="${TZ}" \
+        -e WEBUI_PORT="${qb_port}" \
+        -e BT_PORT="${qb_port_torrent}" \
+        -p ${qb_port}:${qb_port} \
+        -p ${qb_port_torrent}:${qb_port_torrent}/tcp \
+        -p ${qb_port_torrent}:${qb_port_torrent}/udp \
+        --tmpfs /tmp \
+        --restart always \
+        --name qbittorrent_sk \
+        --hostname qbittorrent_sk \
+        ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
+fi
+
+if [ $? -eq 0 ]; then
+    echo -e "${Green}qBittorrent Skip Patch 安装成功${Font}"
+else
+    echo -e "${Red}qBittorrent Skip Patch 安装失败，请尝试重新运行脚本${Font}"
+    exit 1
+fi
 }
 
 downloader_install(){
@@ -713,13 +813,13 @@ choose_downloader
 if [[ ${the_downloader_install} = 'tr' ]]; then
 tr_install
 elif [[ ${the_downloader_install} = 'qb' ]]; then
-echo
+qb_install
 elif [[ ${the_downloader_install} = 'aria2' ]]; then
 echo
 elif [[ ${the_downloader_install} = 'tr_sk' ]]; then
 tr_sk_install
 elif [[ ${the_downloader_install} = 'qb_sk' ]]; then
-echo
+qb_sk_install
 fi
 }
 
