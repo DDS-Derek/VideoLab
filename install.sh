@@ -312,6 +312,14 @@ get_nastool_port(){
 echo -e "${Green}请输入NAStool Web 访问端口（默认 3000 ）${Font}"
 read -p "PORT:" NAStool_port
 [[ -z "${NAStool_port}" ]] && NAStool_port="3000"
+TEST_PORT=${NAStool_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    get_nastool_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
 }
 get_nastool_update(){
 echo -e "${Green}是否启用重启更新 [Y/n]（默认 n ）${Font}"
@@ -621,6 +629,82 @@ else
     echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
     exit 1
 fi
+}
+
+qb_web_port(){
+echo -e "${Green}请输入qBittorrent Web 访问端口（默认 8080 ）${Font}"
+read -p "PORT:" qb_port
+[[ -z "${qb_port}" ]] && qb_port="8080"
+TEST_PORT=${qb_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    qb_web_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+qb_port_torrent_i(){
+echo -e "${Green}请输入qBittorrent Torrent 端口（默认 34567 ）${Font}"
+read -p "PORT:" qb_port_torrent 
+[[ -z "${qb_port_torrent}" ]] && qb_port_torrent="34567"
+TEST_PORT=${qb_port_torrent}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    qb_port_torrent_i
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+qb_install(){
+clear
+echo -e "${Blue}qBittorrent 安装${Font}\n"
+qb_web_port
+qb_port_torrent_i
+
+if [ ! -d ${config_dir}/qbittorrent ]; then
+    mkdir -p ${config_dir}/qbittorrent
+fi
+if [ ! -d ${config_dir}/qbittorrent/config ]; then
+    mkdir -p ${config_dir}/qbittorrent/config
+fi
+
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/qbittorrent/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/qbittorrent/docker-compose.yaml
+    fi
+    cat > ${config_dir}/qbittorrent/docker-compose.yaml << EOF
+version: "2.0"
+services:
+  qbittorrent:
+    image: ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
+    container_name: qbittorrent
+    restart: always
+    tty: true
+    network_mode: bridge
+    hostname: qbitorrent
+    volumes:
+      - ${config_dir}/qbittorrent/config:/data
+      - ${download_dir}:/downloads
+    tmpfs:
+      - /tmp
+    environment:
+      - WEBUI_PORT=${qb_port}
+      - BT_PORT=${qb_port_torrent}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - ${qb_port}:${qb_port}
+      - ${qb_port_torrent}:${qb_port_torrent}
+      - ${qb_port_torrent}:${qb_port_torrent}/udp
+EOF
+    cd ${config_dir}/qbittorrent
+    docker compose up -d
 }
 
 downloader_install(){
