@@ -323,7 +323,7 @@ fi
 }
 get_nastool_update(){
 echo -e "${Green}是否启用重启更新 [Y/n]（默认 n ）${Font}"
-read -p "PORT:" NAStool_update
+read -p "UPDATE:" NAStool_update
 [[ -z "${NAStool_update}" ]] && NAStool_update="n"
 if [[ ${NAStool_update} == [Yy] ]]; then
 NAStool_update_eld=true
@@ -405,7 +405,6 @@ fi
 
 
 choose_downloader(){
-    clear
     echo -e "${Blue}选择安装下载器${Font}\n"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     echo -e "1、Transmission"
@@ -485,6 +484,19 @@ echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
 read -p "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
 echo -e "${Green}设置成功！${Font}"
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}Transmission Web 访问端口=${tr_port}${Font}"
+echo -e "${Green}Transmission Torrent 端口=${tr_port_torrent}${Font}"
+echo -e "${Green}Transmission Web 用户名=${tr_username}${Font}"
+echo -e "${Green}Transmission Web 密码=${tr_password}${Font}\n"
+for i in `seq -w 10 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
 
 if [ ! -d ${config_dir}/transmission ]; then
     mkdir -p ${config_dir}/transmission
@@ -573,6 +585,19 @@ echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
 read -p "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
 echo -e "${Green}设置成功！${Font}"
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}Transmission Web 访问端口=${tr_port}${Font}"
+echo -e "${Green}Transmission Torrent 端口=${tr_port_torrent}${Font}"
+echo -e "${Green}Transmission Web 用户名=${tr_username}${Font}"
+echo -e "${Green}Transmission Web 密码=${tr_password}${Font}\n"
+for i in `seq -w 10 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
 
 if [ ! -d ${config_dir}/transmission_sk ]; then
     mkdir -p ${config_dir}/transmission_sk
@@ -680,6 +705,17 @@ clear
 echo -e "${Blue}qBittorrent 安装${Font}\n"
 qb_web_port
 qb_port_torrent_i
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}qBittorrent Web 访问端口=${qb_port}${Font}"
+echo -e "${Green}qBittorrent Torrent 端口=${qb_port_torrent}${Font}\n"
+for i in `seq -w 5 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
 
 if [ ! -d ${config_dir}/qbittorrent ]; then
     mkdir -p ${config_dir}/qbittorrent
@@ -759,6 +795,17 @@ clear
 echo -e "${Blue}qBittorrent Skip Patch 安装${Font}\n"
 qb_web_port
 qb_port_torrent_i
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}qBittorrent Web 访问端口=${qb_port}${Font}"
+echo -e "${Green}qBittorrent Torrent 端口=${qb_port_torrent}${Font}\n"
+for i in `seq -w 5 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
 
 if [ ! -d ${config_dir}/qbittorrent_sk ]; then
     mkdir -p ${config_dir}/qbittorrent_sk
@@ -857,7 +904,6 @@ fi
 
 
 choose_mediaserver(){
-    clear
     echo -e "${Blue}媒体播放器${Font}\n"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     echo -e "1、Plex"
@@ -887,13 +933,15 @@ choose_mediaserver(){
     esac
 }
 
-plex_install
+plex_install(){
+echo -e "${Blue}Plex 安装${Font}\n"
+}
 
 mediaserver_install(){
 clear
 choose_mediaserver
 if [[ ${the_mediaserver_install} = 'plex' ]]; then
-echo -e "还没写"
+plex_install
 elif [[ ${the_mediaserver_install} = 'emby' ]]; then
 echo -e "还没写"
 elif [[ ${the_mediaserver_install} = 'jellyfin' ]]; then
@@ -904,9 +952,9 @@ fi
 direct_install(){
 clear
 fix_basic_settings
-nastool_install
+#nastool_install
 downloader_install
-mediaserver_install
+#mediaserver_install
 echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
 exit 0
 }
