@@ -1320,8 +1320,12 @@ This is free software, licensed under the GNU General Public License.
         manual_install
         ;;
         3)
+        echo -e "${Red}暂时不支持${Font}"
+        main_return
         ;;
         4)
+        echo -e "${Red}暂时不支持${Font}"
+        main_return
         ;;
         5)
         clear
