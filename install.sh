@@ -830,16 +830,58 @@ fi
 
 
 
+choose_mediaserver(){
+    clear
+    echo -e "${Blue}媒体播放器${Font}\n"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    echo -e "1、Plex"
+    echo -e "2、Emby"
+    echo -e "3、jellyfin"
+    echo -e "4、跳过媒体播放器安装部分"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    read -p "请输入数字 [1-4]:" num
+    case "$num" in
+    1)
+    the_mediaserver_install=plex
+    ;;
+    2)
+    the_mediaserver_install=emby
+    ;;
+    3)
+    the_mediaserver_install=jellyfin
+    ;;
+    4)
+    the_mediaserver_install=false
+    ;;
+    *)
+    clear
+    echo -e "${Red}请输入正确数字 [1-4]${Font}"
+    choose_mediaserver
+    ;;
+    esac
+}
 
 
-
-
+mediaserver_install(){
+clear
+choose_mediaserver
+if [[ ${the_mediaserver_install} = 'plex' ]]; then
+echo -e "还没写"
+elif [[ ${the_mediaserver_install} = 'emby' ]]; then
+echo -e "还没写"
+elif [[ ${the_mediaserver_install} = 'jellyfin' ]]; then
+echo -e "还没写"
+fi
+}
 
 direct_install(){
 clear
 fix_basic_settings
-#nastool_install
+nastool_install
 downloader_install
+mediaserver_install
+echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
+exit 0
 }
 
 # 主菜单
