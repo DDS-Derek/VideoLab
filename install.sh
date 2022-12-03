@@ -373,6 +373,12 @@ services:
 EOF
     cd ${config_dir}/nas-tools
     docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}NAStools 安装成功${Font}"
+    else
+        echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 if [[ ${docker_install_model} = 'cli' ]]; then
     clear
@@ -388,12 +394,12 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         -e NASTOOL_AUTO_UPDATE=${NAStool_update_eld} \
         --restart always \
         jxxghp/nas-tools:latest
-fi
-if [ $? -eq 0 ]; then
-    echo -e "${Green}NAStools 安装成功${Font}"
-else
-    echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
-    exit 1
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}NAStools 安装成功${Font}"
+    else
+        echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 }
 
@@ -518,6 +524,12 @@ services:
 EOF
     cd ${config_dir}/transmission
     docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Transmission 安装成功${Font}"
+    else
+        echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
@@ -538,13 +550,12 @@ if [[ ${docker_install_model} = 'cli' ]]; then
     -v ${download_dir}:/downloads \
     --restart always \
     ddsderek/nas-tools-all-in-one:transmission-${BUILD_TIME}
-fi
-
-if [ $? -eq 0 ]; then
-    echo -e "${Green}Transmission 安装成功${Font}"
-else
-    echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
-    exit 1
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Transmission 安装成功${Font}"
+    else
+        echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 }
 
@@ -601,6 +612,12 @@ services:
 EOF
     cd ${config_dir}/transmission_sk
     docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
+    else
+        echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
@@ -621,13 +638,12 @@ if [[ ${docker_install_model} = 'cli' ]]; then
     -v ${download_dir}:/downloads \
     --restart always \
     ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
-fi
-
-if [ $? -eq 0 ]; then
-    echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
-else
-    echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
-    exit 1
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
+    else
+        echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 }
 
@@ -705,6 +721,12 @@ services:
 EOF
     cd ${config_dir}/qbittorrent
     docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}qBittorrent 安装成功${Font}"
+    else
+        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
@@ -723,13 +745,12 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --name qbittorrent \
         --hostname qbittorrent \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
-fi
-
-if [ $? -eq 0 ]; then
-    echo -e "${Green}qBittorrent 安装成功${Font}"
-else
-    echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
-    exit 1
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}qBittorrent 安装成功${Font}"
+    else
+        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 }
 
@@ -779,6 +800,12 @@ services:
 EOF
     cd ${config_dir}/qbittorrent_sk
     docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}qBittorrent 安装成功${Font}"
+    else
+        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
@@ -797,13 +824,12 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --name qbittorrent_sk \
         --hostname qbittorrent_sk \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
-fi
-
-if [ $? -eq 0 ]; then
-    echo -e "${Green}qBittorrent Skip Patch 安装成功${Font}"
-else
-    echo -e "${Red}qBittorrent Skip Patch 安装失败，请尝试重新运行脚本${Font}"
-    exit 1
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}qBittorrent 安装成功${Font}"
+    else
+        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
 fi
 }
 
