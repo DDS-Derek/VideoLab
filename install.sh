@@ -5,6 +5,8 @@ Font="\033[0m"
 Red="\033[31m" 
 Blue="\033[34m"
 
+BUILD_TIME=2022-12-01
+
 #root权限
 root_need(){
     if [[ $EUID -ne 0 ]]; then
@@ -28,35 +30,46 @@ package_installation(){
         OSNAME='freebsd'
     elif grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
         OSNAME='centos'
-        yum install -y wget zip unzip curl
+        yum install -y wget zip unzip curl lsof
     elif grep -Eqi "Fedora" /etc/issue || grep -Eq "Fedora" /etc/*-release; then
         OSNAME='fedora'
-        yum install -y wget zip unzip curl
+        yum install -y wget zip unzip curl lsof
     elif grep -Eqi "Rocky" /etc/issue || grep -Eq "Rocky" /etc/*-release; then
         OSNAME='rocky'
-        yum install -y wget zip unzip curl
+        yum install -y wget zip unzip curl lsof
     elif grep -Eqi "AlmaLinux" /etc/issue || grep -Eq "AlmaLinux" /etc/*-release; then
         OSNAME='alma'
-        yum install -y wget zip unzip curl
+        yum install -y wget zip unzip curl lsof
     elif grep -Eqi "Amazon Linux" /etc/issue || grep -Eq "Amazon Linux" /etc/*-release; then
         OSNAME='amazon'
-        yum install -y wget zip unzip curl
+        yum install -y wget zip unzip curl lsof
     elif grep -Eqi "Debian" /etc/issue || grep -Eq "Debian" /etc/*-release; then
         OSNAME='debian'
         apt update -y
         apt install -y devscripts
-        apt install -y wget zip unzip curl
+        apt install -y wget zip unzip curl lsof
     elif grep -Eqi "Ubuntu" /etc/issue || grep -Eq "Ubuntu" /etc/*-release; then
         OSNAME='ubuntu'
-        apt install -y wget zip unzip curl
+        apt install -y wget zip unzip curl lsof
     elif grep -Eqi "Alpine" /etc/issue || grep -Eq "Alpine" /etc/*-release; then
         OSNAME='alpine'
-        apk add wget zip unzip curl
+        apk add wget zip unzip curl lsof
     else
         OSNAME='unknow'
         echo -e "${Red}错误：此系统无法使用此脚本${Font}"
         exit 1
     fi
+}
+
+port_if(){
+# 0 未被占用
+# 1 被占用
+TEST_PORT_i=$(lsof -i :${TEST_PORT}|grep -v "PID" | awk '{print $2}')
+if [ "$TEST_PORT_i" != "" ]; then
+   TEST_PORT_IF=1
+else
+   TEST_PORT_IF=0
+fi
 }
 
 get_PUID(){
@@ -365,13 +378,266 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         -e PGID=${PGID} \
         -e UMASK=${Umask} \
         -e NASTOOL_AUTO_UPDATE=${NAStool_update_eld} \
+        --restart always \
         jxxghp/nas-tools:latest
+fi
+if [ $? -eq 0 ]; then
+    echo -e "${Green}NAStools 安装成功${Font}"
+else
+    echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
+    exit 1
 fi
 }
 
-#downloader_install(){
 
-#}
+choose_downloader(){
+    clear
+    echo -e "${Blue}选择安装下载器${Font}\n"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    echo -e "1、Transmission"
+    echo -e "2、qBittorrent"
+    echo -e "3、Aria2-Pro"
+    echo -e "4、Transmission快验版"
+    echo -e "5、qBittorrent快验版"
+    echo -e "6、跳过下载器安装部分"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    read -p "请输入数字 [1-6]:" num
+    case "$num" in
+    1)
+    the_downloader_install=tr
+    ;;
+    2)
+    the_downloader_install=qb
+    ;;
+    3)
+    the_downloader_install=aria2
+    ;;
+    4)
+    the_downloader_install=tr_sk
+    ;;
+    5)
+    the_downloader_install=qb_sk
+    ;;
+    6)
+    the_downloader_install=false
+    ;;
+    *)
+    clear
+    echo -e "${Red}请输入正确数字 [1-6]${Font}"
+    choose_downloader
+    ;;
+    esac
+}
+
+tr_web_port(){
+echo -e "${Green}请输入Transmission Web 访问端口（默认 9091 ）${Font}"
+read -p "PORT:" tr_port
+[[ -z "${tr_port}" ]] && tr_port="9091"
+TEST_PORT=${tr_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    tr_web_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+tr_port_torrent_i(){
+echo -e "${Green}请输入Transmission Torrent 端口（默认 51413 ）${Font}"
+read -p "PORT:" tr_port_torrent 
+[[ -z "${tr_port_torrent}" ]] && tr_port_torrent="51413"
+TEST_PORT=${tr_port_torrent}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    tr_port_torrent_i
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+tr_install(){
+clear
+echo -e "${Blue}Transmission 安装${Font}\n"
+tr_web_port
+tr_port_torrent_i
+echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
+read -p "USERNAME:" tr_username
+[[ -z "${tr_username}" ]] && tr_username="username"
+echo -e "${Green}设置成功！${Font}"
+echo
+echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
+read -p "PASSWORD:" tr_password
+[[ -z "${tr_password}" ]] && tr_password="password"
+echo -e "${Green}设置成功！${Font}"
+
+if [ ! -d ${config_dir}/transmission ]; then
+    mkdir -p ${config_dir}/transmission
+fi
+if [ ! -d ${config_dir}/transmission/config ]; then
+    mkdir -p ${config_dir}/transmission/config
+fi
+
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/transmission/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/transmission/docker-compose.yaml
+    fi
+    cat > ${config_dir}/transmission/docker-compose.yaml << EOF
+version: "2.1"
+services:
+  transmission:
+    image: ddsderek/nas-tools-all-in-one:transmission-${BUILD_TIME}
+    container_name: transmission
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - TRANSMISSION_WEB_HOME=/transmission-web-control/
+      - USER=${tr_username}
+      - PASS=${tr_password}
+      - DOWNLOAD_DIR=/downloads
+      - PEERPORT=${tr_port_torrent}
+    volumes:
+      - ${config_dir}/transmission/config:/config
+      - ${download_dir}:/downloads
+    ports:
+      - ${tr_port}:9091
+      - ${tr_port_torrent}:${tr_port_torrent}
+      - ${tr_port_torrent}:${tr_port_torrent}/udp
+    restart: always
+EOF
+    cd ${config_dir}/transmission
+    docker compose up -d
+fi
+
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -d \
+    --name=transmission \
+    -e PUID=${PUID} \
+    -e PGID=${PGID} \
+    -e TZ=${TZ} \
+    -e TRANSMISSION_WEB_HOME=/transmission-web-control/ \
+    -e USER=${tr_username} \
+    -e PASS=${tr_password} \
+    -e PEERPORT=${tr_port_torrent} \
+    -e DOWNLOAD_DIR=/downloads \
+    -p ${tr_port}:9091 \
+    -p ${tr_port_torrent}:${tr_port_torrent} \
+    -p ${tr_port_torrent}:${tr_port_torrent}/udp \
+    -v ${config_dir}/transmission/config:/config \
+    -v ${download_dir}:/downloads \
+    --restart always \
+    ddsderek/nas-tools-all-in-one:transmission-${BUILD_TIME}
+fi
+
+if [ $? -eq 0 ]; then
+    echo -e "${Green}Transmission 安装成功${Font}"
+else
+    echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
+    exit 1
+fi
+}
+
+tr_sk_install(){
+clear
+echo -e "${Blue}Transmission 安装${Font}\n"
+tr_web_port
+tr_port_torrent_i
+echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
+read -p "USERNAME:" tr_username
+[[ -z "${tr_username}" ]] && tr_username="username"
+echo -e "${Green}设置成功！${Font}"
+echo
+echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
+read -p "PASSWORD:" tr_password
+[[ -z "${tr_password}" ]] && tr_password="password"
+echo -e "${Green}设置成功！${Font}"
+
+if [ ! -d ${config_dir}/transmission ]; then
+    mkdir -p ${config_dir}/transmission
+fi
+if [ ! -d ${config_dir}/transmission/config ]; then
+    mkdir -p ${config_dir}/transmission/config
+fi
+
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/transmission/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/transmission/docker-compose.yaml
+    fi
+    cat > ${config_dir}/transmission/docker-compose.yaml << EOF
+version: "2.1"
+services:
+  transmission:
+    image: ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
+    container_name: transmission
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - TRANSMISSION_WEB_HOME=/transmission-web-control/
+      - USER=${tr_username}
+      - PASS=${tr_password}
+      - DOWNLOAD_DIR=/downloads
+      - PEERPORT=${tr_port_torrent}
+    volumes:
+      - ${config_dir}/transmission/config:/config
+      - ${download_dir}:/downloads
+    ports:
+      - ${tr_port}:9091
+      - ${tr_port_torrent}:${tr_port_torrent}
+      - ${tr_port_torrent}:${tr_port_torrent}/udp
+    restart: always
+EOF
+    cd ${config_dir}/transmission
+    docker compose up -d
+fi
+
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -d \
+    --name=transmission \
+    -e PUID=${PUID} \
+    -e PGID=${PGID} \
+    -e TZ=${TZ} \
+    -e TRANSMISSION_WEB_HOME=/transmission-web-control/ \
+    -e USER=${tr_username} \
+    -e PASS=${tr_password} \
+    -e PEERPORT=${tr_port_torrent} \
+    -e DOWNLOAD_DIR=/downloads \
+    -p ${tr_port}:9091 \
+    -p ${tr_port_torrent}:${tr_port_torrent} \
+    -p ${tr_port_torrent}:${tr_port_torrent}/udp \
+    -v ${config_dir}/transmission/config:/config \
+    -v ${download_dir}:/downloads \
+    --restart always \
+    ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
+fi
+
+if [ $? -eq 0 ]; then
+    echo -e "${Green}Transmission 安装成功${Font}"
+else
+    echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
+    exit 1
+fi
+}
+
+downloader_install(){
+clear
+choose_downloader
+if [[ ${the_downloader_install} = 'tr' ]]; then
+tr_install
+elif [[ ${the_downloader_install} = 'qb' ]]; then
+echo
+elif [[ ${the_downloader_install} = 'aria2' ]]; then
+echo
+elif [[ ${the_downloader_install} = 'tr_sk' ]]; then
+tr_sk_install
+elif [[ ${the_downloader_install} = 'qb_sk' ]]; then
+echo
+fi
+}
 
 
 
@@ -383,7 +649,8 @@ fi
 direct_install(){
 clear
 fix_basic_settings
-nastool_install
+#nastool_install
+downloader_install
 }
 
 # 主菜单
