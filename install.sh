@@ -504,7 +504,7 @@ fi
 if [ ! -d ${config_dir}/transmission/config ]; then
     mkdir -p ${config_dir}/transmission/config
 fi
-
+chown -R ${PUID}:${PGID} ${config_dir}/transmission
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/transmission/docker-compose.yaml ]; then
@@ -605,7 +605,7 @@ fi
 if [ ! -d ${config_dir}/transmission_sk/config ]; then
     mkdir -p ${config_dir}/transmission_sk/config
 fi
-
+chown -R ${PUID}:${PGID} ${config_dir}/transmission_sk
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/transmission_sk/docker-compose.yaml ]; then
@@ -723,7 +723,7 @@ fi
 if [ ! -d ${config_dir}/qbittorrent/config ]; then
     mkdir -p ${config_dir}/qbittorrent/config
 fi
-
+chown -R ${PUID}:${PGID} ${config_dir}/qbittorrent
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/qbittorrent/docker-compose.yaml ]; then
@@ -813,7 +813,7 @@ fi
 if [ ! -d ${config_dir}/qbittorrent_sk/config ]; then
     mkdir -p ${config_dir}/qbittorrent_sk/config
 fi
-
+chown -R ${PUID}:${PGID} ${config_dir}/qbittorrent_sk
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/qbittorrent_sk/docker-compose.yaml ]; then
@@ -933,8 +933,291 @@ choose_mediaserver(){
     esac
 }
 
+
+plex_web_port(){
+echo -e "${Green}请输入Plex Web 访问端口（默认 32400 ）${Font}"
+read -p "PORT:" plex_port
+[[ -z "${plex_port}" ]] && plex_port="32400"
+TEST_PORT=${plex_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    plex_web_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
 plex_install(){
+clear
 echo -e "${Blue}Plex 安装${Font}\n"
+plex_web_port
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}Plex Web 访问端口=${plex_port}${Font}"
+for i in `seq -w 3 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
+
+if [ ! -d ${config_dir}/plex ]; then
+    mkdir -p ${config_dir}/plex
+fi
+if [ ! -d ${config_dir}/plex/config ]; then
+    mkdir -p ${config_dir}/plex/config
+fi
+if [ ! -d ${config_dir}/plex/transcode ]; then
+    mkdir -p ${config_dir}/plex/transcode
+fi
+chown -R ${PUID}:${PGID} ${config_dir}/plex
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/plex/docker-compose.yaml ]; then
+        touch ${config_dir}/plex/docker-compose.yaml
+    fi
+    cat > ${config_dir}/plex/docker-compose.yaml << EOF
+version: '2'
+services:
+  plex:
+    container_name: plex
+    image: plexinc/pms-docker
+    restart: always
+    ports:
+      - ${plex_port}:32400/tcp
+#      - 3005:3005/tcp
+#      - 8324:8324/tcp
+#      - 32469:32469/tcp
+#      - 1900:1900/udp
+#      - 32410:32410/udp
+#      - 32412:32412/udp
+#      - 32413:32413/udp
+#      - 32414:32414/udp
+    environment:
+      - TZ=${TZ}
+      - PLEX_UID=${PUID}
+      - PLEX_GID=${PGID}
+#      - PLEX_CLAIM=<claimToken>
+#      - ADVERTISE_IP=http://<hostIPAddress>:32400/
+    hostname: plex
+    volumes:
+      - ${config_dir}/plex/config:/config
+      - ${config_dir}/plex/transcode:/transcode
+      - ${media_dir}:/data
+EOF
+    cd ${config_dir}/plex
+    docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Plex 安装成功${Font}"
+    else
+        echo -e "${Red}Plex 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
+
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run \
+        -d \
+        --name plex \
+        -p ${plex_port}:32400/tcp \
+        -e TZ="${TZ}" \
+        -h plex \
+        -v ${config_dir}/plex/config:/config \
+        -v ${config_dir}/plex/transcode:/transcode \
+        -v ${media_dir}:/data \
+        --restart always \
+        plexinc/pms-docker
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Plex 安装成功${Font}"
+    else
+        echo -e "${Red}Plex 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
+}
+
+emby_web_port(){
+echo -e "${Green}请输入Emby Web 访问端口（默认 8096 ）${Font}"
+read -p "PORT:" emby_port
+[[ -z "${emby_port}" ]] && emby_port="8096"
+TEST_PORT=${emby_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    emby_web_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+emby_install(){
+clear
+echo -e "${Blue}Emby 安装${Font}\n"
+emby_web_port
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}Emby Web 访问端口=${emby_port}${Font}"
+for i in `seq -w 3 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
+
+if [ ! -d ${config_dir}/emby ]; then
+    mkdir -p ${config_dir}/emby
+fi
+if [ ! -d ${config_dir}/emby/config ]; then
+    mkdir -p ${config_dir}/emby/config
+fi
+chown -R ${PUID}:${PGID} ${config_dir}/emby
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/emby/docker-compose.yaml ]; then
+        touch ${config_dir}/emby/docker-compose.yaml
+    fi
+    cat > ${config_dir}/emby/docker-compose.yaml << EOF
+version: "2.3"
+services:
+  emby:
+    image: emby/embyserver:latest
+    container_name: embyserver
+#    runtime: nvidia
+    environment:
+      - UID=${PUID}
+      - GID=${PGID}
+#      - GIDLIST=100
+      - TZ=${TZ}
+    volumes:
+      - ${config_dir}/emby/config:/config
+      - ${media_dir}:/data
+    ports:
+      - ${emby_port}:8096
+#      - 8920:8920
+#    devices:
+#      - /dev/dri:/dev/dri
+#      - /dev/vchiq:/dev/vchiq
+    restart: always
+EOF
+    cd ${config_dir}/emby
+    docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Emby 安装成功${Font}"
+    else
+        echo -e "${Red}Emby 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -d \
+        --name embyserver \
+        --volume ${config_dir}/emby/config:/config \
+        --volume ${media_dir}:/data \
+        --publish ${emby_port}:8096 \
+        --env UID=${PUID} \
+        --env GID=${PGID} \
+        --env TZ=${TZ} \
+        --restart always \
+        emby/embyserver:latest
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Emby 安装成功${Font}"
+    else
+        echo -e "${Red}Emby 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
+}
+
+jellyfin_web_port(){
+echo -e "${Green}请输入Jellyfin Web 访问端口（默认 8096 ）${Font}"
+read -p "PORT:" jellyfin_port
+[[ -z "${jellyfin_port}" ]] && jellyfin_port="8096"
+TEST_PORT=${jellyfin_port}
+port_if
+if [[ ${TEST_PORT_IF=} = '1' ]]; then
+    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    jellyfin_web_port
+else
+    echo -e "${Green}设置成功！${Font}"
+fi
+echo
+}
+jellyfin_install(){
+clear
+echo -e "${Blue}Jellyfin 安装${Font}\n"
+jellyfin_web_port
+sleep 2
+
+clear
+echo -e "${Blue}设置总览${Font}\n"
+echo -e "${Green}jellyfin Web 访问端口=${jellyfin_port}${Font}"
+for i in `seq -w 3 -1 0`
+do
+    echo -en "${Green}即将开始安装${Font}${Blue} $i ${Font}\r"  
+  sleep 1;
+done
+
+if [ ! -d ${config_dir}/jellyfin ]; then
+    mkdir -p ${config_dir}/jellyfin
+fi
+if [ ! -d ${config_dir}/jellyfin/config ]; then
+    mkdir -p ${config_dir}/jellyfin/config
+fi
+if [ ! -d ${config_dir}/jellyfin/cache ]; then
+    mkdir -p ${config_dir}/jellyfin/cache
+fi
+chown -R ${PUID}:${PGID} ${config_dir}/jellyfin
+if [[ ${docker_install_model} = 'compose' ]]; then
+    clear
+    if [ ! -f ${config_dir}/jellyfin/docker-compose.yaml ]; then
+        touch ${config_dir}/jellyfin/docker-compose.yaml
+    fi
+    cat > ${config_dir}/jellyfin/docker-compose.yaml << EOF
+version: '3.5'
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    user: ${PUID}:${PGID}
+    ports:
+      - ${jellyfin_port}:8096
+    volumes:
+      - ${config_dir}/jellyfin/config:/config
+      - ${config_dir}/jellyfin/cache:/cache
+      - ${media_dir}:/media
+    restart: 'always'
+#    environment:
+#      - JELLYFIN_PublishedServerUrl=http://example.com
+EOF
+    cd ${config_dir}/jellyfin
+    docker compose up -d
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Jellyfin 安装成功${Font}"
+    else
+        echo -e "${Red}Jellyfin 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
+if [[ ${docker_install_model} = 'cli' ]]; then
+    docker run -d \
+        --name jellyfin \
+        --user ${PUID}:${PGID} \
+        --publish ${jellyfin_port}:8096 \
+        --volume ${config_dir}/jellyfin/config:/config \
+        --volume ${config_dir}/jellyfin/config:/cache \
+        --mount type=bind,source=${media_dir},target=/media \
+        --restart=always \
+        jellyfin/jellyfin
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}Jellyfin 安装成功${Font}"
+    else
+        echo -e "${Red}Jellyfin 安装失败，请尝试重新运行脚本${Font}"
+        exit 1
+    fi
+fi
 }
 
 mediaserver_install(){
@@ -943,18 +1226,18 @@ choose_mediaserver
 if [[ ${the_mediaserver_install} = 'plex' ]]; then
 plex_install
 elif [[ ${the_mediaserver_install} = 'emby' ]]; then
-echo -e "还没写"
+emby_install
 elif [[ ${the_mediaserver_install} = 'jellyfin' ]]; then
-echo -e "还没写"
+jellyfin_install
 fi
 }
 
 direct_install(){
 clear
 fix_basic_settings
-#nastool_install
+nastool_install
 downloader_install
-#mediaserver_install
+mediaserver_install
 echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
 exit 0
 }
@@ -978,14 +1261,20 @@ manual_install(){
     manual_install
     ;;
     2)
+    . /etc/nastools_all_in_one/settings.sh
+    . ${config_dir}/nastools_all_in_one/basic_settings.sh
     nastool_install
     manual_install
     ;;
     3)
+    . /etc/nastools_all_in_one/settings.sh
+    . ${config_dir}/nastools_all_in_one/basic_settings.sh
     downloader_install
     manual_install
     ;;
     4)
+    . /etc/nastools_all_in_one/settings.sh
+    . ${config_dir}/nastools_all_in_one/basic_settings.sh
     mediaserver_install
     manual_install
     ;;
