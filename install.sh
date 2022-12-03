@@ -815,7 +815,12 @@ tr_install
 elif [[ ${the_downloader_install} = 'qb' ]]; then
 qb_install
 elif [[ ${the_downloader_install} = 'aria2' ]]; then
-echo
+for i in `seq -w 3 -1 0`
+do
+    echo -en "${Red}目前不支持Aria2 ,请选择其他下载器${Font}${Green} $i ${Font}\r"  
+  sleep 1;
+done
+downloader_install
 elif [[ ${the_downloader_install} = 'tr_sk' ]]; then
 tr_sk_install
 elif [[ ${the_downloader_install} = 'qb_sk' ]]; then
