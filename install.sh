@@ -323,7 +323,7 @@ fi
 if [ ! -d ${config_dir}/nas-tools/config ]; then
     mkdir -p ${config_dir}/nas-tools/config
 fi
-if [ ${docker_install_model} == 'compose' ]; then
+if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/nas-tools/docker-compose.yaml ]; then
         mkdir -p ${config_dir}/nas-tools/docker-compose.yaml
@@ -352,7 +352,7 @@ EOF
     cd ${config_dir}/nas-tools
     docker compose up -d
 fi
-if [ ${docker_install_model} == 'cli' ]; then
+if [[ ${docker_install_model} = 'cli' ]]; then
     clear
     docker run -d \
         --name nas-tools \
