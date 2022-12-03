@@ -268,6 +268,7 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     get_config_dir
     get_media_dir
     get_download_dir
+    choose_docker_install_model
     clear
     show_basic_settings
 else
