@@ -348,7 +348,7 @@ fi
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/nas-tools/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/nas-tools/docker-compose.yaml
+        touch ${config_dir}/nas-tools/docker-compose.yaml
     fi
     cat > ${config_dir}/nas-tools/docker-compose.yaml << EOF
 version: "3"
@@ -490,7 +490,7 @@ fi
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/transmission/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/transmission/docker-compose.yaml
+        touch ${config_dir}/transmission/docker-compose.yaml
     fi
     cat > ${config_dir}/transmission/docker-compose.yaml << EOF
 version: "2.1"
@@ -573,7 +573,7 @@ fi
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/transmission_sk/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/transmission_sk/docker-compose.yaml
+        touch ${config_dir}/transmission_sk/docker-compose.yaml
     fi
     cat > ${config_dir}/transmission_sk/docker-compose.yaml << EOF
 version: "2.1"
@@ -675,7 +675,7 @@ fi
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/qbittorrent/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/qbittorrent/docker-compose.yaml
+        touch ${config_dir}/qbittorrent/docker-compose.yaml
     fi
     cat > ${config_dir}/qbittorrent/docker-compose.yaml << EOF
 version: "2.0"
@@ -749,7 +749,7 @@ fi
 if [[ ${docker_install_model} = 'compose' ]]; then
     clear
     if [ ! -f ${config_dir}/qbittorrent_sk/docker-compose.yaml ]; then
-        mkdir -p ${config_dir}/qbittorrent_sk/docker-compose.yaml
+        touch ${config_dir}/qbittorrent_sk/docker-compose.yaml
     fi
     cat > ${config_dir}/qbittorrent_sk/docker-compose.yaml << EOF
 version: "2.0"
@@ -861,6 +861,7 @@ choose_mediaserver(){
     esac
 }
 
+plex_install
 
 mediaserver_install(){
 clear
