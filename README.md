@@ -1,5 +1,9 @@
 # nas-tools-all-in-one
 
+```bash
+bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh')
+```
+
 - 向导安装
 
   - 1. 环境检测
