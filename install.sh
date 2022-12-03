@@ -959,15 +959,48 @@ echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
 exit 0
 }
 
-# 主菜单
-main(){
-    # 检测是否为 root 用户
-    root_need
-    # 清理命令行
+
+
+manual_install(){
     clear
-    # 安装软件包
-    package_installation
-    # 清理命令行
+    echo -e "${Blue}手动安装${Font}\n"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    echo -e "1、基础设置"
+    echo -e "2、NAStool"
+    echo -e "3、下载器"
+    echo -e "4、媒体服务器"
+    echo -e "5、返回上级目录"    
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    read -p "请输入数字 [1-5]:" num
+    case "$num" in
+    1)
+    fix_basic_settings
+    manual_install
+    ;;
+    2)
+    nastool_install
+    manual_install
+    ;;
+    3)
+    downloader_install
+    manual_install
+    ;;
+    4)
+    mediaserver_install
+    manual_install
+    ;;
+    5)
+    main_return
+    ;;
+    *)
+    clear
+    echo -e "${Red}请输入正确数字 [1-5]${Font}"
+    manual_install
+    ;;
+    esac
+}
+
+main_return(){
     clear
     echo -e "${Blue}use os: ${OSNAME}${Font}"
     echo -e "——————————————————————————————————————————————————————————————————————————————————
@@ -982,12 +1015,11 @@ Copyright (c) 2022 DDSRem <https://blog.ddsrem.com>
 This is free software, licensed under the GNU General Public License.
 
 ——————————————————————————————————————————————————————————————————————————————————"
-    # 输出主菜单
     echo -e "${Blue}NAStool All In One${Font}\n"
     echo -e "1、向导安装"
-    echo -e "2、手动安装"
+    echo -e "2、手动设置"
     echo -e "3、更新"
-    echo -e "4、修改基础配置"
+    echo -e "4、卸载"
     echo -e "5、退出脚本"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     read -p "请输入数字 [1-5]:" num
@@ -996,14 +1028,14 @@ This is free software, licensed under the GNU General Public License.
         direct_install
         ;;
         2)
+        manual_install
         ;;
         3)
         ;;
         4)
-        fix_basic_settings
-        bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh')
         ;;
         5)
+        clear
         exit 0
         ;;
         *)
@@ -1012,6 +1044,17 @@ This is free software, licensed under the GNU General Public License.
         main
         ;;
         esac
+}
+
+# 主菜单
+main(){
+    # 检测是否为 root 用户
+    root_need
+    # 清理命令行
+    clear
+    # 安装软件包
+    package_installation
+    main_return
 }
 
 main
