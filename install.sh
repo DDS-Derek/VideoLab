@@ -97,15 +97,39 @@ echo
 }
 get_download_dir(){
 echo -e "${Green}请输入下载目录路径（默认 /media/downloads ）${Font}"
+echo -e "${Red}注意，下载目录路径应在媒体目录文件夹下\n比如说媒体路径为/media，那么下载路径应填/media/downloads${Font}"
 read -p "DIR:" NEW_download_dir
 [[ -z "${NEW_download_dir}" ]] && NEW_download_dir="/media/downloads"
 echo 
 }
 get_media_dir(){
-echo -e "${Green}请输入媒体最终存放路径（默认 /media ）${Font}"
+echo -e "${Green}请输入媒体路径（默认 /media ）${Font}"
+echo -e "${Red}注意，下载目录路径应在媒体目录文件夹下\n比如说媒体路径为/media，那么下载路径应填/media/downloads${Font}"
 read -p "DIR:" NEW_media_dir
 [[ -z "${NEW_media_dir}" ]] && NEW_media_dir="/media"
 echo 
+}
+choose_docker_install_model(){
+    clear
+    echo -e "${Blue}容器安装模式选择${Font}\n"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    echo -e "1、docker-cli安装模式"
+    echo -e "2、docker-compose安装模式"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    read -p "请输入数字 [1-2]:" num
+    case "$num" in
+    1)
+    NEW_docker_install_model=cli
+    ;;
+    2)
+    NEW_docker_install_model=compose
+    ;;
+    *)
+    clear
+    echo -e "${Red}请输入正确数字 [1-2]${Font}"
+    choose_docker_install_model
+    ;;
+    esac
 }
 save_basic_settings(){
 if [ ! -d ${NEW_config_dir} ]; then
@@ -141,6 +165,8 @@ TZ=${NEW_TZ}
 download_dir=${NEW_download_dir}
 media_dir=${NEW_media_dir}
 
+docker_install_model=${NEW_docker_install_model}
+
 EOF
 cat > /etc/nastools_all_in_one/settings.sh << EOF
 #!/usr/bin/env bash
@@ -164,18 +190,20 @@ show_basic_settings(){
     echo -e "${Green}TZ=${NEW_TZ}${Font}"
     echo -e "${Green}配置文件存放路径 ${NEW_config_dir}${Font}"
     echo -e "${Green}下载目录路径 ${NEW_download_dir}${Font}"
-    echo -e "${Green}媒体最终存放路径 ${NEW_media_dir}${Font}\n"
+    echo -e "${Green}媒体最终存放路径 ${NEW_media_dir}${Font}"
+    echo -e "${Green}容器安装模式docker-${NEW_docker_install_model}${Font}\n"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     echo -e "1、修改PUID"
     echo -e "2、修改PGID"
     echo -e "3、修改Umask"
     echo -e "4、修改时区"
     echo -e "5、修改配置文件存放路径"
-    echo -e "6、修改下载目录路径"
-    echo -e "7、修改媒体最终存放路径"
-    echo -e "8、保存配置"
+    echo -e "6、修改媒体存放路径"
+    echo -e "7、修改下载目录路径"
+    echo -e "8、修改容器安装模式选择"
+    echo -e "9、保存配置"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-8]:" num
+    read -p "请输入数字 [1-9]:" num
     case "$num" in
         1)
         get_PUID
@@ -203,16 +231,21 @@ show_basic_settings(){
         show_basic_settings
         ;;
         6)
-        get_download_dir
-        clear
-        show_basic_settings
-        ;;
-        7)
         get_media_dir
         clear
         show_basic_settings
         ;;
+        7)
+        get_download_dir
+        clear
+        show_basic_settings
+        ;;
         8)
+        choose_docker_install_model
+        clear
+        show_basic_settings
+        ;;
+        9)
         save_basic_settings
         ;;
         *)
@@ -221,11 +254,6 @@ show_basic_settings(){
         show_basic_settings
         ;;
         esac
-}
-
-direct_install(){
-clear
-fix_basic_settings
 }
 
 fix_basic_settings(){
@@ -238,8 +266,8 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     get_tz
     clear
     get_config_dir
-    get_download_dir
     get_media_dir
+    get_download_dir
     clear
     show_basic_settings
 else
@@ -252,6 +280,7 @@ else
     Old_download_dir=${download_dir}
     Old_media_dir=${media_dir}
     Old_config_dir=${config_dir}
+    Old_docker_install_model=${docker_install_model}
 
     NEW_PUID=${Old_PUID}
     NEW_PGID=${Old_PGID}
@@ -260,10 +289,88 @@ else
     NEW_download_dir=${Old_download_dir}
     NEW_media_dir=${Old_media_dir}
     NEW_config_dir=${Old_config_dir}
+    NEW_docker_install_model=${Old_docker_install_model}
     show_basic_settings
 fi
 }
 
+get_nastool_port(){
+echo -e "${Green}请输入NAStool Web 访问端口（默认 3000 ）${Font}"
+read -p "PORT:" NAStool_port
+[[ -z "${NAStool_port}" ]] && NAStool_port="3000"
+}
+get_nastool_update(){
+echo -e "${Green}是否启用重启更新 [Y/n]（默认 n ）${Font}"
+read -p "PORT:" NAStool_update
+[[ -z "${NAStool_update}" ]] && NAStool_update="n"
+if [[ ${NAStool_update} == [Yy] ]]; then
+NAStool_update_eld=true
+fi
+if [[ ${NAStool_update} == [Nn] ]]; then
+NAStool_update_eld=false
+fi
+}
+nastool_install(){
+clear
+echo -e "${Blue}NAStool 安装${Font}\n"
+get_nastool_port
+get_nastool_update
+. /etc/nastools_all_in_one/settings.sh
+. ${config_dir}/nastools_all_in_one/basic_settings.sh
+if [ ! -d ${config_dir}/nas-tools ]; then
+    mkdir -p ${config_dir}/nas-tools
+fi
+if [ ! -d ${config_dir}/nas-tools/config ]; then
+    mkdir -p ${config_dir}/nas-tools/config
+fi
+if [ ${docker_install_model} = 'compose' ]; then
+    clear
+    if [ ! -f ${config_dir}/nas-tools/docker-compose.yaml ]; then
+        mkdir -p ${config_dir}/nas-tools/docker-compose.yaml
+    fi
+    cat > ${config_dir}/nas-tools/docker-compose.yaml << EOF
+version: "3"
+services:
+  nas-tools:
+    image: jxxghp/nas-tools:latest
+    ports:
+      - ${NAStool_port}:3000
+    volumes:
+      - ${config_dir}/nas-tools/config:/config
+      - ${media_dir}:/media
+    environment: 
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - UMASK=${Umask}
+      - NASTOOL_AUTO_UPDATE=${NAStool_update_eld}
+     #- REPO_URL=https://ghproxy.com/https://github.com/jxxghp/nas-tools.git
+    restart: always
+    network_mode: bridge
+    hostname: nas-tools
+    container_name: nas-tools
+EOF
+    cd ${config_dir}/nas-tools
+    docker compose up -d
+fi
+if [ ${docker_install_model} = 'cli' ]; then
+    clear
+    docker run -d \
+        --name nas-tools \
+        --hostname nas-tools \
+        -p ${NAStool_port}:3000\
+        -v ${config_dir}/nas-tools/config:/config \
+        -v ${media_dir}:/media \
+        -e PUID=${PUID} \
+        -e PGID=${PGID} \
+        -e UMASK=${Umask} \
+        -e NASTOOL_AUTO_UPDATE=${NAStool_update_eld} \
+        jxxghp/nas-tools:latest
+fi
+}
+
+#downloader_install(){
+
+#}
 
 
 
@@ -272,11 +379,11 @@ fi
 
 
 
-
-
-
-
-
+direct_install(){
+clear
+fix_basic_settings
+nastool_install
+}
 
 # 主菜单
 main(){
