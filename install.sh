@@ -30,6 +30,14 @@ package_installation(){
         OSNAME='macos'
         echo -e "${Red}错误：此系统无法使用此脚本${Font}"
         exit 1
+    elif [ -f /etc/VERSION ]; then
+        OSNAME='dsm'
+        if [ ! -f /etc/VERSION ]; then
+            dsm_ipkg_install
+        fi
+        ipkg update
+        ipkg install lsof
+        ipkg install unzip
     elif grep -Eq "openSUSE" /etc/*-release; then
         OSNAME='opensuse'
         zypper refresh
@@ -61,14 +69,6 @@ package_installation(){
     elif grep -Eqi "Alpine" /etc/issue || grep -Eq "Alpine" /etc/*-release; then
         OSNAME='alpine'
         apk add wget zip unzip curl lsof
-    elif [ -f /etc/VERSION ]; then
-        OSNAME='dsm'
-        if [ ! -f /etc/VERSION ]; then
-            dsm_ipkg_install
-        fi
-        ipkg update
-        ipkg install lsof
-        ipkg install unzip
     else
         OSNAME='unknow'
         echo -e "${Red}错误：此系统无法使用此脚本${Font}"
@@ -526,7 +526,7 @@ services:
     container_name: nas-tools
 EOF
     cd ${config_dir}/nas-tools
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}NAStools 安装成功${Font}"
     else
@@ -689,7 +689,7 @@ services:
     restart: always
 EOF
     cd ${config_dir}/transmission
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}Transmission 安装成功${Font}"
     else
@@ -790,7 +790,7 @@ services:
     restart: always
 EOF
     cd ${config_dir}/transmission_sk
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
     else
@@ -910,7 +910,7 @@ services:
       - ${qb_port_torrent}:${qb_port_torrent}/udp
 EOF
     cd ${config_dir}/qbittorrent
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}qBittorrent 安装成功${Font}"
     else
@@ -1000,7 +1000,7 @@ services:
       - ${qb_port_torrent}:${qb_port_torrent}/udp
 EOF
     cd ${config_dir}/qbittorrent_sk
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}qBittorrent 安装成功${Font}"
     else
@@ -1162,7 +1162,7 @@ services:
       - ${media_dir}:/data
 EOF
     cd ${config_dir}/plex
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}Plex 安装成功${Font}"
     else
@@ -1257,7 +1257,7 @@ services:
     restart: always
 EOF
     cd ${config_dir}/emby
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}Emby 安装成功${Font}"
     else
@@ -1347,7 +1347,7 @@ services:
 #      - JELLYFIN_PublishedServerUrl=http://example.com
 EOF
     cd ${config_dir}/jellyfin
-    docker compose up -d
+    docker-compose up -d
     if [ $? -eq 0 ]; then
         echo -e "${Green}Jellyfin 安装成功${Font}"
     else
