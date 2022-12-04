@@ -1443,9 +1443,8 @@ This is free software, licensed under the GNU General Public License.
     echo -e "${Blue}NAStool All In One${Font}\n"
     echo -e "1、向导安装"
     echo -e "2、手动设置"
-    echo -e "3、更新"
-    echo -e "4、卸载"
-    echo -e "5、退出脚本"
+    echo -e "3、更新容器"
+    echo -e "4、退出脚本"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     read -p "请输入数字 [1-5]:" num
     case "$num" in
@@ -1461,10 +1460,6 @@ This is free software, licensed under the GNU General Public License.
         update_containers
         ;;
         4)
-        echo -e "${Red}暂时不支持${Font}"
-        main_return
-        ;;
-        5)
         clear
         exit 0
         ;;
