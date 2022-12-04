@@ -73,6 +73,7 @@ fi
 }
 
 manual_update_containers(){
+clear
 echo -e "${Blue}更新容器${Font}"
 docker ps --all --format "table {{.Names}}"
 if [ $? -eq 0 ]; then
@@ -102,6 +103,112 @@ else
     echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
     exit 1
 fi
+}
+
+timing_update_containers(){
+clear
+if [[ "$(docker inspect nas-tools-all-in-one-watchtower 2> /dev/null | grep '"Name": "/nas-tools-all-in-one-watchtower"')" = "" ]]; then
+    echo -e "${Blue}设置定时更新容器${Font}"
+    docker ps --all --format "table {{.Names}}"
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}请输入你想定时更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
+        read -p "Containers Name:" containers_name
+        clear
+        echo -e "${Green}需定时更新容器列表${Font}\n${containers_name}"
+        for i in `seq -w 3 -1 0`
+        do
+            echo -en "${Green}即将开始启动定时任务${Font}${Blue} $i ${Font}\r"  
+        sleep 1;
+        done
+        docker run -itd \
+            --name nas-tools-all-in-one-watchtower \
+            -e TZ=Asia/Shanghai \
+            --restart always \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            containrrr/watchtower \
+            --cleanup ${containers_name} --schedule "0 0 0 * * *"
+        if [ $? -eq 0 ]; then
+            echo -e "${Green}定时任务设置成功${Font}"
+        else
+            echo -e "${Red}定时任务设置失败，请重新尝试${Font}"
+            exit 1
+        fi
+    else
+        echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+        exit 1
+    fi
+else
+    echo -e "${Blue}设置定时更新容器${Font}"
+    echo -e "${Green}检测到旧定时任务，清理旧定时任务中...${Font}"
+    docker stop nas-tools-all-in-one-watchtower
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}停止旧定时任务成功${Font}"
+    else
+        echo -e "${Red}停止旧容器失败，请尝试手动停止 nas-tools-all-in-one-watchtower 容器${Font}"
+        exit 1
+    fi
+    docker rm -f nas-tools-all-in-one-watchtower
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}删除旧定时任务成功${Font}"
+    else
+        echo -e "${Red}删除旧容器失败，请尝试手动删除 nas-tools-all-in-one-watchtower 容器${Font}"
+        exit 1
+    fi
+    docker ps --all --format "table {{.Names}}"
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}请输入你想定时更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
+        read -p "Containers Name:" containers_name
+        clear
+        echo -e "${Green}需定时更新容器列表${Font}\n${containers_name}"
+        for i in `seq -w 3 -1 0`
+        do
+            echo -en "${Green}即将开始启动定时任务${Font}${Blue} $i ${Font}\r"  
+        sleep 1;
+        done
+        docker run -itd \
+            --name nas-tools-all-in-one-watchtower \
+            -e TZ=Asia/Shanghai \
+            --restart always \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            containrrr/watchtower \
+            --cleanup ${containers_name} --schedule "0 0 0 * * *"
+        if [ $? -eq 0 ]; then
+            echo -e "${Green}定时任务设置成功${Font}"
+        else
+            echo -e "${Red}定时任务设置失败，请重新尝试${Font}"
+            exit 1
+        fi
+    else
+        echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+        exit 1
+    fi
+fi
+}
+
+update_containers(){
+    echo -e "${Blue}更新${Font}\n"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    echo -e "1、手动更新"
+    echo -e "2、设置定时更新"
+    echo -e "3、返回上级目录"
+    echo -e "——————————————————————————————————————————————————————————————————————————————————"
+    read -p "请输入数字 [1-3]:" num
+    case "$num" in
+    1)
+    manual_update_containers
+    ;;
+    2)
+    timing_update_containers
+    ;;
+    3)
+    main_return
+    ;;
+    *)
+    clear
+    echo -e "${Red}请输入正确数字 [1-3]${Font}"
+    update_containers
+    ;;
+    esac
 }
 
 get_PUID(){
@@ -1274,10 +1381,7 @@ echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
 exit 0
 }
 
-
-
 manual_install(){
-    clear
     echo -e "${Blue}手动安装${Font}\n"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     echo -e "1、基础设置"
@@ -1349,10 +1453,12 @@ This is free software, licensed under the GNU General Public License.
         direct_install
         ;;
         2)
+        clear
         manual_install
         ;;
         3)
-        manual_update_containers
+        clear
+        update_containers
         ;;
         4)
         echo -e "${Red}暂时不支持${Font}"
