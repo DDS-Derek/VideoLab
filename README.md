@@ -3,6 +3,9 @@
 ```bash
 bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh')
 ```
+```bash
+bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh)
+```
 
 - 向导安装
 
