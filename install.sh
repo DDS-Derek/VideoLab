@@ -72,6 +72,38 @@ else
 fi
 }
 
+manual_update_containers(){
+echo -e "${Blue}更新容器${Font}"
+docker ps --all --format "table {{.Names}}"
+if [ $? -eq 0 ]; then
+    echo -e "${Green}请输入你想更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
+    read -p "Containers Name:" containers_name
+    clear
+    echo -e "${Green}本次更新容器列表${Font}\n${containers_name}"
+    sleep 1
+    for i in `seq -w 3 -1 0`
+    do
+        echo -en "${Green}即将开始更新${Font}${Blue} $i ${Font}\r"  
+    sleep 1;
+    done
+    docker run --rm \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        containrrr/watchtower \
+        --run-once \
+        --cleanup \
+        ${containers_name}
+    if [ $? -eq 0 ]; then
+        echo -e "${Green}更新成功${Font}"
+    else
+        echo -e "${Red}更新失败，请重新尝试${Font}"
+        exit 1
+    fi
+else
+    echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+    exit 1
+fi
+}
+
 get_PUID(){
 echo -e "${Green}请输入媒体文件所有者的用户ID（默认 0 ）${Font}"
 read -p "PUID:" NEW_PUID
@@ -83,26 +115,26 @@ read -p "PGID:" NEW_PGID
 [[ -z "${NEW_PGID}" ]] && NEW_PGID="0"
 }
 get_id(){
-echo -e "${Blue}容器用户和用户组ID设置"
+echo -e "${Blue}容器用户和用户组ID设置${Font}"
 echo -e "前往 https://github.com/jxxghp/nas-tools/tree/master/docker#%E5%85%B3%E4%BA%8Epuidpgid%E7%9A%84%E8%AF%B4%E6%98%8E 查看uid获取方法\n"
 get_PUID
 echo
 get_PGID
 }
 get_umask(){
-echo -e "${Blue}容器Umask设置\n"
+echo -e "${Blue}容器Umask设置${Font}\n"
 echo -e "${Green}请输入Umask（默认 000 ）${Font}"
 read -p "Umask:" NEW_UMASK
 [[ -z "${NEW_UMASK}" ]] && NEW_UMASK="000"
 }
 get_tz(){
-echo -e "${Blue}容器时区设置\n"
+echo -e "${Blue}容器时区设置${Font}\n"
 echo -e "${Green}请输入时区（默认 Asia/Shanghai ）${Font}"
 read -p "TZ:" NEW_TZ
 [[ -z "${NEW_TZ}" ]] && NEW_TZ="Asia/Shanghai"
 }
 get_config_dir(){
-echo -e "${Blue}文件路径设置\n"
+echo -e "${Blue}文件路径设置${Font}\n"
 echo -e "${Green}请输入配置文件存放路径（默认 /root/data ）${Font}"
 read -p "DIR:" NEW_config_dir
 [[ -z "${NEW_config_dir}" ]] && NEW_config_dir="/root/data"
@@ -1320,8 +1352,7 @@ This is free software, licensed under the GNU General Public License.
         manual_install
         ;;
         3)
-        echo -e "${Red}暂时不支持${Font}"
-        main_return
+        manual_update_containers
         ;;
         4)
         echo -e "${Red}暂时不支持${Font}"
