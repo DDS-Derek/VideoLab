@@ -95,7 +95,7 @@ echo -e "${Blue}更新容器${Font}"
 docker ps --all --format "table {{.Names}}"
 if [ $? -eq 0 ]; then
     echo -e "${Green}请输入你想更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
-    read -p "Containers Name:" containers_name
+    read -ep "Containers Name:" containers_name
     clear
     echo -e "${Green}本次更新容器列表${Font}\n${containers_name}"
     sleep 1
@@ -129,7 +129,7 @@ if [[ "$(docker inspect nas-tools-all-in-one-watchtower 2> /dev/null | grep '"Na
     docker ps --all --format "table {{.Names}}"
     if [ $? -eq 0 ]; then
         echo -e "${Green}请输入你想定时更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
-        read -p "Containers Name:" containers_name
+        read -ep "Containers Name:" containers_name
         clear
         echo -e "${Green}需定时更新容器列表${Font}\n${containers_name}"
         for i in `seq -w 3 -1 0`
@@ -174,7 +174,7 @@ else
     docker ps --all --format "table {{.Names}}"
     if [ $? -eq 0 ]; then
         echo -e "${Green}请输入你想定时更新的容器名（可以输入多个容器名，中间用空格分离）${Font}"
-        read -p "Containers Name:" containers_name
+        read -ep "Containers Name:" containers_name
         clear
         echo -e "${Green}需定时更新容器列表${Font}\n${containers_name}"
         for i in `seq -w 3 -1 0`
@@ -209,7 +209,7 @@ update_containers(){
     echo -e "2、设置定时更新"
     echo -e "3、返回上级目录"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-3]:" num
+    read -ep "请输入数字 [1-3]:" num
     case "$num" in
     1)
     manual_update_containers
@@ -230,12 +230,12 @@ update_containers(){
 
 get_PUID(){
 echo -e "${Green}请输入媒体文件所有者的用户ID（默认 0 ）${Font}"
-read -p "PUID:" NEW_PUID
+read -ep "PUID:" NEW_PUID
 [[ -z "${NEW_PUID}" ]] && NEW_PUID="0"
 }
 get_PGID(){
 echo -e "${Green}请输入媒体文件所有者的用户组ID（默认 0 ）${Font}"
-read -p "PGID:" NEW_PGID
+read -ep "PGID:" NEW_PGID
 [[ -z "${NEW_PGID}" ]] && NEW_PGID="0"
 }
 get_id(){
@@ -248,33 +248,33 @@ get_PGID
 get_umask(){
 echo -e "${Blue}容器Umask设置${Font}\n"
 echo -e "${Green}请输入Umask（默认 000 ）${Font}"
-read -p "Umask:" NEW_UMASK
+read -ep "Umask:" NEW_UMASK
 [[ -z "${NEW_UMASK}" ]] && NEW_UMASK="000"
 }
 get_tz(){
 echo -e "${Blue}容器时区设置${Font}\n"
 echo -e "${Green}请输入时区（默认 Asia/Shanghai ）${Font}"
-read -p "TZ:" NEW_TZ
+read -ep "TZ:" NEW_TZ
 [[ -z "${NEW_TZ}" ]] && NEW_TZ="Asia/Shanghai"
 }
 get_config_dir(){
 echo -e "${Blue}文件路径设置${Font}\n"
 echo -e "${Green}请输入配置文件存放路径（默认 /root/data ）${Font}"
-read -p "DIR:" NEW_config_dir
+read -ep "DIR:" NEW_config_dir
 [[ -z "${NEW_config_dir}" ]] && NEW_config_dir="/root/data"
 echo 
 }
 get_download_dir(){
 echo -e "${Green}请输入下载目录路径（默认 /media/downloads ）${Font}"
 echo -e "${Red}注意，下载目录路径应在媒体目录文件夹下\n比如说媒体路径为/media，那么下载路径应填/media/downloads${Font}"
-read -p "DIR:" NEW_download_dir
+read -ep "DIR:" NEW_download_dir
 [[ -z "${NEW_download_dir}" ]] && NEW_download_dir="/media/downloads"
 echo 
 }
 get_media_dir(){
 echo -e "${Green}请输入媒体路径（默认 /media ）${Font}"
 echo -e "${Red}注意，下载目录路径应在媒体目录文件夹下\n比如说媒体路径为/media，那么下载路径应填/media/downloads${Font}"
-read -p "DIR:" NEW_media_dir
+read -ep "DIR:" NEW_media_dir
 [[ -z "${NEW_media_dir}" ]] && NEW_media_dir="/media"
 echo 
 }
@@ -285,7 +285,7 @@ choose_docker_install_model(){
     echo -e "1、docker-cli安装模式"
     echo -e "2、docker-compose安装模式"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-2]:" num
+    read -ep "请输入数字 [1-2]:" num
     case "$num" in
     1)
     NEW_docker_install_model=cli
@@ -372,7 +372,7 @@ show_basic_settings(){
     echo -e "8、修改容器安装模式选择"
     echo -e "9、保存配置"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-9]:" num
+    read -ep "请输入数字 [1-9]:" num
     case "$num" in
         1)
         get_PUID
@@ -466,7 +466,7 @@ fi
 
 get_nastool_port(){
 echo -e "${Green}请输入NAStool Web 访问端口（默认 3000 ）${Font}"
-read -p "PORT:" NAStool_port
+read -ep "PORT:" NAStool_port
 [[ -z "${NAStool_port}" ]] && NAStool_port="3000"
 TEST_PORT=${NAStool_port}
 port_if
@@ -479,7 +479,7 @@ fi
 }
 get_nastool_update(){
 echo -e "${Green}是否启用重启更新 [Y/n]（默认 n ）${Font}"
-read -p "UPDATE:" NAStool_update
+read -ep "UPDATE:" NAStool_update
 [[ -z "${NAStool_update}" ]] && NAStool_update="n"
 if [[ ${NAStool_update} == [Yy] ]]; then
 NAStool_update_eld=true
@@ -570,7 +570,7 @@ choose_downloader(){
     echo -e "5、qBittorrent快验版"
     echo -e "6、跳过下载器安装部分"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-6]:" num
+    read -ep "请输入数字 [1-6]:" num
     case "$num" in
     1)
     the_downloader_install=tr
@@ -600,7 +600,7 @@ choose_downloader(){
 
 tr_web_port(){
 echo -e "${Green}请输入Transmission Web 访问端口（默认 9091 ）${Font}"
-read -p "PORT:" tr_port
+read -ep "PORT:" tr_port
 [[ -z "${tr_port}" ]] && tr_port="9091"
 TEST_PORT=${tr_port}
 port_if
@@ -614,7 +614,7 @@ echo
 }
 tr_port_torrent_i(){
 echo -e "${Green}请输入Transmission Torrent 端口（默认 51413 ）${Font}"
-read -p "PORT:" tr_port_torrent 
+read -ep "PORT:" tr_port_torrent 
 [[ -z "${tr_port_torrent}" ]] && tr_port_torrent="51413"
 TEST_PORT=${tr_port_torrent}
 port_if
@@ -632,12 +632,12 @@ echo -e "${Blue}Transmission 安装${Font}\n"
 tr_web_port
 tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
-read -p "USERNAME:" tr_username
+read -ep "USERNAME:" tr_username
 [[ -z "${tr_username}" ]] && tr_username="username"
 echo -e "${Green}设置成功！${Font}"
 echo
 echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
-read -p "PASSWORD:" tr_password
+read -ep "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
 echo -e "${Green}设置成功！${Font}"
 sleep 2
@@ -733,12 +733,12 @@ echo -e "${Blue}Transmission Skip Patch 安装${Font}\n"
 tr_web_port
 tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
-read -p "USERNAME:" tr_username
+read -ep "USERNAME:" tr_username
 [[ -z "${tr_username}" ]] && tr_username="username"
 echo -e "${Green}设置成功！${Font}"
 echo
 echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
-read -p "PASSWORD:" tr_password
+read -ep "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
 echo -e "${Green}设置成功！${Font}"
 sleep 2
@@ -830,7 +830,7 @@ fi
 
 qb_web_port(){
 echo -e "${Green}请输入qBittorrent Web 访问端口（默认 8080 ）${Font}"
-read -p "PORT:" qb_port
+read -ep "PORT:" qb_port
 [[ -z "${qb_port}" ]] && qb_port="8080"
 TEST_PORT=${qb_port}
 port_if
@@ -844,7 +844,7 @@ echo
 }
 qb_port_torrent_i(){
 echo -e "${Green}请输入qBittorrent Torrent 端口（默认 34567 ）${Font}"
-read -p "PORT:" qb_port_torrent 
+read -ep "PORT:" qb_port_torrent 
 [[ -z "${qb_port_torrent}" ]] && qb_port_torrent="34567"
 TEST_PORT=${qb_port_torrent}
 port_if
@@ -1067,7 +1067,7 @@ choose_mediaserver(){
     echo -e "3、jellyfin"
     echo -e "4、跳过媒体播放器安装部分"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-4]:" num
+    read -ep "请输入数字 [1-4]:" num
     case "$num" in
     1)
     the_mediaserver_install=plex
@@ -1092,7 +1092,7 @@ choose_mediaserver(){
 
 plex_web_port(){
 echo -e "${Green}请输入Plex Web 访问端口（默认 32400 ）${Font}"
-read -p "PORT:" plex_port
+read -ep "PORT:" plex_port
 [[ -z "${plex_port}" ]] && plex_port="32400"
 TEST_PORT=${plex_port}
 port_if
@@ -1196,7 +1196,7 @@ fi
 
 emby_web_port(){
 echo -e "${Green}请输入Emby Web 访问端口（默认 8096 ）${Font}"
-read -p "PORT:" emby_port
+read -ep "PORT:" emby_port
 [[ -z "${emby_port}" ]] && emby_port="8096"
 TEST_PORT=${emby_port}
 port_if
@@ -1289,7 +1289,7 @@ fi
 
 jellyfin_web_port(){
 echo -e "${Green}请输入Jellyfin Web 访问端口（默认 8096 ）${Font}"
-read -p "PORT:" jellyfin_port
+read -ep "PORT:" jellyfin_port
 [[ -z "${jellyfin_port}" ]] && jellyfin_port="8096"
 TEST_PORT=${jellyfin_port}
 port_if
@@ -1407,7 +1407,7 @@ manual_install(){
     echo -e "4、媒体服务器"
     echo -e "5、返回上级目录"    
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-5]:" num
+    read -ep "请输入数字 [1-5]:" num
     case "$num" in
     1)
     fix_basic_settings
@@ -1463,7 +1463,7 @@ This is free software, licensed under the GNU General Public License.
     echo -e "3、更新容器"
     echo -e "4、退出脚本"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -p "请输入数字 [1-5]:" num
+    read -ep "请输入数字 [1-5]:" num
     case "$num" in
         1)
         direct_install
