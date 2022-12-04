@@ -38,6 +38,8 @@ package_installation(){
         ipkg update
         ipkg install lsof
         ipkg install unzip
+    elif grep -Eqi "QNAP" /etc/issue; then
+        OSNAME='QNAP'
     elif grep -Eq "openSUSE" /etc/*-release; then
         OSNAME='opensuse'
         zypper refresh
