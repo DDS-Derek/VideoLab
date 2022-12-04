@@ -58,3 +58,5 @@ bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-D
 有时间我去把这些下载器的镜像改一改，让它可以完美适配这个脚本和nastools
 
 🤣可以考虑再加一个限制容器内存。之前小鸡踩过的坑
+
+https://www.ztianzeng.com/posts/从Emby直链初识NJS模块/
