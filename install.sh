@@ -15,6 +15,13 @@ root_need(){
     fi
 }
 
+dsm_ipkg_install(){
+wget http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/syno-i686-bootstrap_1.2-7_i686.xsh
+chmod +x syno-i686-bootstrap_1.2-7_i686.xsh
+sh syno-i686-bootstrap_1.2-7_i686.xsh
+touch /etc/nas-tools-all-in-one-ipkg.lock
+}
+
 # 软件包安装
 package_installation(){
     _os=`uname`
@@ -54,6 +61,14 @@ package_installation(){
     elif grep -Eqi "Alpine" /etc/issue || grep -Eq "Alpine" /etc/*-release; then
         OSNAME='alpine'
         apk add wget zip unzip curl lsof
+    elif [ -f /etc/VERSION ]; then
+        OSNAME='dsm'
+        if [ ! -f /etc/VERSION ]; then
+            dsm_ipkg_install
+        fi
+        ipkg update
+        ipkg install lsof
+        ipkg install unzip
     else
         OSNAME='unknow'
         echo -e "${Red}错误：此系统无法使用此脚本${Font}"
