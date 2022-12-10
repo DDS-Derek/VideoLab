@@ -923,7 +923,8 @@ fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -dit \
-        -v $PWD/qbittorrent:/data \
+        -v ${config_dir}/qbittorrent/config:/data \
+        -v ${download_dir}:/downloads \
         -e PUID="${PUID}" \
         -e PGID="${PGID}" \
         -e TZ="${TZ}" \
@@ -1013,7 +1014,8 @@ fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -dit \
-        -v ${config_dir}/qbittorrent_sk/config:/data \
+        -v ${config_dir}/qbittorrent/config:/data \
+        -v ${download_dir}:/downloads \
         -e PUID="${PUID}" \
         -e PGID="${PGID}" \
         -e TZ="${TZ}" \
