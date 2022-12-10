@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-Media_DIR=${MEDIA_DIR:=/home/video2}
+. /etc/nastools_all_in_one/settings.sh
+. ${config_dir}/nastools_all_in_one/basic_settings.sh
+Media_DIR=${media_dir}
 CFVR=${CFVR:=755}
-PUID=${PUID:=1000}
-PGID=${PGID:=1000}
 
 Green="\033[32m"
 Font="\033[0m"
