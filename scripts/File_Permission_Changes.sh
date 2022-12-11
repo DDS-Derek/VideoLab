@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # 脚本在Ubuntu上可以正常使用，其他Linux系统未经过测试，理论上全部Linux都可用
+#
+# Thanks：https://blog.csdn.net/qq_45698148/article/details/120064768
 
 . /etc/nastools_all_in_one/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
