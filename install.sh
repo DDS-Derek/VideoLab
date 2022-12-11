@@ -446,6 +446,8 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     clear
     get_umask
     clear
+    get_CFVR
+    clear
     get_tz
     clear
     get_config_dir
