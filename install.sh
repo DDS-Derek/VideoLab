@@ -251,6 +251,12 @@ echo -e "${Green}请输入Umask（默认 000 ）${Font}"
 read -ep "Umask:" NEW_UMASK
 [[ -z "${NEW_UMASK}" ]] && NEW_UMASK="000"
 }
+get_CFVR(){
+echo -e "${Blue}CFVR设置${Font}\n"
+echo -e "${Green}请输入CFVR（默认 755 ）${Font}"
+read -ep "CFVR:" NEW_CFVR
+[[ -z "${NEW_CFVR}" ]] && NEW_CFVR="755"
+}
 get_tz(){
 echo -e "${Blue}容器时区设置${Font}\n"
 echo -e "${Green}请输入时区（默认 Asia/Shanghai ）${Font}"
@@ -328,6 +334,7 @@ cat > ${NEW_config_dir}/nastools_all_in_one/basic_settings.sh << EOF
 PUID=${NEW_PUID}
 PGID=${NEW_PGID}
 Umask=${NEW_UMASK}
+CFVR=${NEW_CFVR}
 
 TZ=${NEW_TZ}
 
@@ -356,6 +363,7 @@ show_basic_settings(){
     echo -e "${Green}PUID=${NEW_PUID}${Font}"
     echo -e "${Green}PGID=${NEW_PGID}${Font}"
     echo -e "${Green}Umask=${NEW_UMASK}${Font}"
+    echo -e "${Green}CFVR=${NEW_CFVR}${Font}"
     echo -e "${Green}TZ=${NEW_TZ}${Font}"
     echo -e "${Green}配置文件存放路径 ${NEW_config_dir}${Font}"
     echo -e "${Green}下载目录路径 ${NEW_download_dir}${Font}"
@@ -365,14 +373,15 @@ show_basic_settings(){
     echo -e "1、修改PUID"
     echo -e "2、修改PGID"
     echo -e "3、修改Umask"
-    echo -e "4、修改时区"
-    echo -e "5、修改配置文件存放路径"
-    echo -e "6、修改媒体存放路径"
-    echo -e "7、修改下载目录路径"
-    echo -e "8、修改容器安装模式选择"
-    echo -e "9、保存配置"
+    echo -e "4、修改CFVR"
+    echo -e "5、修改时区"
+    echo -e "6、修改配置文件存放路径"
+    echo -e "7、修改媒体存放路径"
+    echo -e "8、修改下载目录路径"
+    echo -e "9、修改容器安装模式选择"
+    echo -e "10、保存配置"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -ep "请输入数字 [1-9]:" num
+    read -ep "请输入数字 [1-10]:" num
     case "$num" in
         1)
         get_PUID
@@ -388,38 +397,42 @@ show_basic_settings(){
         get_umask
         clear
         show_basic_settings
-        ;;
         4)
-        get_tz
+        get_CFVR
         clear
         show_basic_settings
         ;;
         5)
-        get_config_dir
+        get_tz
         clear
         show_basic_settings
         ;;
         6)
-        get_media_dir
+        get_config_dir
         clear
         show_basic_settings
         ;;
         7)
-        get_download_dir
+        get_media_dir
         clear
         show_basic_settings
         ;;
         8)
-        choose_docker_install_model
+        get_download_dir
         clear
         show_basic_settings
         ;;
         9)
+        choose_docker_install_model
+        clear
+        show_basic_settings
+        ;;
+        10)
         save_basic_settings
         ;;
         *)
         clear
-        echo -e "${Red}请输入正确数字 [1-8]${Font}"
+        echo -e "${Red}请输入正确数字 [1-10]${Font}"
         show_basic_settings
         ;;
         esac
@@ -446,6 +459,7 @@ else
     Old_PUID=${PUID}
     Old_PGID=${PGID}
     Old_Umask=${Umask}
+    Old_CFVR=${CFVR}
     Old_TZ=${TZ}
     Old_download_dir=${download_dir}
     Old_media_dir=${media_dir}
@@ -455,6 +469,7 @@ else
     NEW_PUID=${Old_PUID}
     NEW_PGID=${Old_PGID}
     NEW_UMASK=${Old_Umask}
+    NEW_CFVR=${Old_CFVR}
     NEW_TZ=${Old_TZ}
     NEW_download_dir=${Old_download_dir}
     NEW_media_dir=${Old_media_dir}
