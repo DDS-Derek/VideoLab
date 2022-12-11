@@ -397,6 +397,7 @@ show_basic_settings(){
         get_umask
         clear
         show_basic_settings
+        ;;
         4)
         get_CFVR
         clear
