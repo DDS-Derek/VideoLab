@@ -99,6 +99,43 @@ grep '<' ${PWD}/lock.sc.cp |awk '{$1=$2="";print}' > lock.sc.end
 sed -i 's/  //g' lock.sc.end
 }
 
+# 判断哪些文件需要重设权限，通过文件名称和修改时间判断，如果是修改文件可以正常判断
+check_file_time(){
+if [ ! -f ${PWD}/lock.sc.new ]; then
+    touch ${PWD}/lock.sc.new
+fi
+# 保存旧文件列表
+if [ -f ${PWD}/lock.sc.old ]; then
+    # 备份
+    if [ -f ${PWD}/lock.sc.old.backup ]; then
+        rm -rf ${PWD}/lock.sc.old.backup
+    fi
+    cp ${PWD}/lock.sc.old ${PWD}/lock.sc.old.backup
+    rm -rf ${PWD}/lock.sc.old
+    cp ${PWD}/lock.sc.new ${PWD}/lock.sc.old
+    rm -rf ${PWD}/lock.sc.new
+    touch ${PWD}/lock.sc.new
+else
+    # 第一次使用才会出现这种情况
+    cp ${PWD}/lock.sc.new ${PWD}/lock.sc.old
+    rm -rf ${PWD}/lock.sc.new
+    touch ${PWD}/lock.sc.new
+fi
+# 生成新列表
+find ${Media_DIR} -type f -printf "%TY-%Tm-%Td_%TH:%TM:%TS_%Tz  %p\n" > ${PWD}/lock.sc.new
+if [ $? -eq 0 ]; then
+    echo -e "${Green}文件遍历成功${Font}"
+else
+    echo -e "${Red}文件遍历失败${Font}"
+    exit 1
+fi
+# 进行比对
+diff ${PWD}/lock.sc.new ${PWD}/lock.sc.old > ${PWD}/lock.sc.cp
+# 输出修改结果
+grep '<' ${PWD}/lock.sc.cp |awk '{$1=$2="";print}' > lock.sc.end
+sed -i 's/  //g' lock.sc.end
+}
+
 # 全部重设权限
 check_all_file(){
 if [ ! -f ${PWD}/lock.sc ]; then
@@ -150,7 +187,7 @@ if [ "$hash_old" != "$hash_new" ]; then
     # hash不同
     echo -e "${Blue}检测到新文件，设置权限中...${Font}"
     # 获取需要重设权限的文件列表
-    check_file_md5sum
+    check_file_time
     # 设置文件权限
     IFS=$(echo -en "\n\b")
     chmod ${CFVR} $(cat lock.sc.end)
