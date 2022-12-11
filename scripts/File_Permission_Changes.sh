@@ -3,12 +3,16 @@
 . /etc/nastools_all_in_one/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
 Media_DIR=${media_dir}
-CFVR=${CFVR:=755}
 
 Green="\033[32m"
 Font="\033[0m"
 Red="\033[31m" 
 Blue="\033[34m"
+
+SAVEIFS=$IFS
+
+changed=
+deleted=
 
 check_file(){
 if [ ! -f ${PWD}/lock.sca.new ]; then
@@ -22,24 +26,17 @@ else
     cp ${PWD}/lock.sca.new ${PWD}/lock.sca.old
 fi
 # 生成新列表
-find ${Media_DIR} -type f|xargs md5sum > ${PWD}/lock.sca.new
-# 将文件名作为遍历对象进行一一比对
-for i in `awk '{print $2}' ${PWD}/lock.sca.new`
-do
-    # 以new为标准，当old不存在遍历对象中的文件时直接输出不存在的结果
-    if grep -qw "$i" ${PWD}/lock.sca.old; then
-        md5_new=`grep -w "$i" ${PWD}/lock.sca.new|awk '{print $1}'`
-        md5_old=`grep -w "$i" ${PWD}/lock.sca.old|awk '{print $1}'`
-        # 当文件存在时，如果md5值不一致则输出文件改变的结果
-        if [ $md5_new != $md5_old ]; then
-            changed="${changed} $i"
-        fi
-    else
-        deleted="${deleted} $i"
-    fi
-done
-# 统一文件
-file="${changed} ${deleted}"
+#find ${Media_DIR} -type f | xargs -d "\n" sha256sum > ${PWD}/lock.sca.new
+find ${Media_DIR} -type f > ${PWD}/lock.sca.new
+# 进行比对
+diff ${PWD}/lock.sca.new ${PWD}/lock.sca.old > ${PWD}/lock.sca
+#echo -e "$(grep '<' ${PWD}/lock.sca |awk '{$1=$2="";print}')\n" > lock.scb
+# 输出修改结果
+echo -e "$(grep '<' ${PWD}/lock.sca |awk '{$1=" ";print}')" > lock.scb
+sed -i 's/  //g' lock.scb
+#sed -i ':a;N;s/\n/" /g;ta' lock.scb
+# 统一
+file=$(cat lock.scb)
 }
 
 check(){
@@ -97,12 +94,13 @@ if [ "$hash_old" != "$hash_new" ]; then
     # 获取改变或者新加入的文件列表
     check_file
     # 设置文件权限
+    IFS=$(echo -en "\n\b")
     chmod ${CFVR} ${file}
     #chmod ${CFVR} ${Media_DIR}
     if [ $? -eq 0 ]; then
         echo -e "${Green}chmod 成功${Font}"
     else
-        echo -e "${Red}chomd 失败${Font}"
+        echo -e "${Red}chmod 失败${Font}"
         exit 1
     fi
     # 设置文件用户和用户组
@@ -114,10 +112,11 @@ if [ "$hash_old" != "$hash_new" ]; then
         echo -e "${Red}chown 失败${Font}"
         exit 1
     fi
+    IFS=$SAVEIFS
 else
     # hash相同
     echo -e "${Blue}无需设置${Font}"
 fi
 }
 
-check
+check1
