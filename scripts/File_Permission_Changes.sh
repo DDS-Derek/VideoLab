@@ -188,24 +188,28 @@ if [ "$hash_old" != "$hash_new" ]; then
     echo -e "${Blue}检测到新文件，设置权限中...${Font}"
     # 获取需要重设权限的文件列表
     check_file_time
-    # 设置文件权限
-    IFS=$(echo -en "\n\b")
-    chmod ${CFVR} $(cat lock.sc.end)
-    if [ $? -eq 0 ]; then
-        echo -e "${Green}chmod 成功${Font}"
+    if grep -q '<' ${PWD}/lock.sc.cp; then
+        # 设置文件权限
+        IFS=$(echo -en "\n\b")
+        chmod ${CFVR} $(cat lock.sc.end)
+        if [ $? -eq 0 ]; then
+            echo -e "${Green}chmod 成功${Font}"
+        else
+            echo -e "${Red}chmod 失败${Font}"
+            exit 1
+        fi
+        # 设置文件用户和用户组
+        chown ${PUID}:${PGID} $(cat lock.sc.end)
+        if [ $? -eq 0 ]; then
+            echo -e "${Green}chown 成功${Font}"
+        else
+            echo -e "${Red}chown 失败${Font}"
+            exit 1
+        fi
+        IFS=$SAVEIFS
     else
-        echo -e "${Red}chmod 失败${Font}"
-        exit 1
+        echo -e "${Blue}无需设置${Font}"
     fi
-    # 设置文件用户和用户组
-    chown ${PUID}:${PGID} $(cat lock.sc.end)
-    if [ $? -eq 0 ]; then
-        echo -e "${Green}chown 成功${Font}"
-    else
-        echo -e "${Red}chown 失败${Font}"
-        exit 1
-    fi
-    IFS=$SAVEIFS
 else
     # hash相同
     echo -e "${Blue}无需设置${Font}"
