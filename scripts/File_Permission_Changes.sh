@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# 脚本在Ubuntu上可以正常使用，其他Linux系统未经过测试，理论上全部Linux都可用
+
 . /etc/nastools_all_in_one/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
 Media_DIR=${media_dir}
@@ -14,6 +16,7 @@ SAVEIFS=$IFS
 changed=
 deleted=
 
+# 判断哪些文件需要重设权限
 check_file(){
 if [ ! -f ${PWD}/lock.sca.new ]; then
     touch ${PWD}/lock.sca.new
@@ -39,6 +42,7 @@ sed -i 's/  //g' lock.scb
 file=$(cat lock.scb)
 }
 
+# 全部重设权限
 check(){
 if [ ! -f ${PWD}/lock.sc ]; then
     touch ${PWD}/lock.sc
@@ -78,6 +82,7 @@ else
 fi
 }
 
+# 只给需要重设权限的文件重设权限
 check1(){
 if [ ! -f ${PWD}/lock.sc ]; then
     touch ${PWD}/lock.sc
@@ -91,7 +96,7 @@ hash_new=$(cat ${PWD}/lock.sc)
 if [ "$hash_old" != "$hash_new" ]; then
     # hash不同
     echo -e "${Blue}检测到新文件，设置权限中...${Font}"
-    # 获取改变或者新加入的文件列表
+    # 获取需要重设权限的文件列表
     check_file
     # 设置文件权限
     IFS=$(echo -en "\n\b")
