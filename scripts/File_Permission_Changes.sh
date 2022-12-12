@@ -16,9 +16,9 @@
 Media_DIR=${media_dir}
 
 Green="\033[32m"
-Font="\033[0m"
 Red="\033[31m" 
 Blue="\033[34m"
+Font="\033[0m"
 
 SAVEIFS=$IFS
 
@@ -224,7 +224,7 @@ find ${Media_DIR} -type d | sha256sum > ${PWD}/lock.sd
 # 获取新文件列表hash
 file_hash_new=$(cat ${PWD}/lock.sc)
 dir_hash_new=$(cat ${PWD}/lock.sd)
-# 对比
+# 文件夹
 if [[ "$dir_hash_old" != "$dir_hash_new" ]]; then
     # hash不同
     echo -e "${Blue}检测到新文件夹，设置权限中...${Font}"
@@ -256,7 +256,7 @@ else
     # hash相同
     echo -e "${Blue}文件夹无需设置${Font}"
 fi
-
+# 文件
 if [[ "$file_hash_old" != "$file_hash_new" ]]; then
     # hash不同
     echo -e "${Blue}检测到新文件，设置权限中...${Font}"
