@@ -250,7 +250,7 @@ if [[ "$dir_hash_old" != "$dir_hash_new" ]]; then
         fi
         IFS=$SAVEIFS
     else
-        echo -e "${Blue}文件夹无需设置${Font}"
+        echo -e "${Green}有文件夹删除${Font}\n${Blue}文件夹无需设置${Font}"
     fi
 else
     # hash相同
@@ -282,7 +282,7 @@ if [[ "$file_hash_old" != "$file_hash_new" ]]; then
         fi
         IFS=$SAVEIFS
     else
-        echo -e "${Blue}文件无需设置${Font}"
+        echo -e "${Green}有文件删除${Font}\n${Blue}文件无需设置${Font}"
     fi
 else
     # hash相同
