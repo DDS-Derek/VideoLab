@@ -22,9 +22,6 @@ Font="\033[0m"
 
 SAVEIFS=$IFS
 
-changed=
-deleted=
-
 # 判断哪些文件需要重设权限，通过文件名称判断，如果是修改文件则无法判断
 check_file(){
 if [ ! -f ${PWD}/lock.sc.new ]; then
