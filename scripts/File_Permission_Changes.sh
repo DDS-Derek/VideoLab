@@ -225,9 +225,9 @@ find ${Media_DIR} -type d | sha256sum > ${PWD}/lock.sd
 file_hash_new=$(cat ${PWD}/lock.sc)
 dir_hash_new=$(cat ${PWD}/lock.sd)
 # 对比
-if [[ "$file_hash_old" != "$file_hash_new" || "$dir_hash_old" != "$dir_hash_new" ]]; then
+if [[ "$dir_hash_old" != "$dir_hash_new" ]]; then
     # hash不同
-    echo -e "${Blue}检测到新文件，设置权限中...${Font}"
+    echo -e "${Blue}检测到新文件夹，设置权限中...${Font}"
     # 获取需要重设权限的文件列表
     check_dir_time
     if grep -q '<' ${PWD}/lock.sd.cp; then
@@ -250,8 +250,17 @@ if [[ "$file_hash_old" != "$file_hash_new" || "$dir_hash_old" != "$dir_hash_new"
         fi
         IFS=$SAVEIFS
     else
-        echo -e "${Blue}无需设置${Font}"
+        echo -e "${Blue}文件夹无需设置${Font}"
     fi
+else
+    # hash相同
+    echo -e "${Blue}文件夹无需设置${Font}"
+fi
+
+if [[ "$file_hash_old" != "$file_hash_new" ]]; then
+    # hash不同
+    echo -e "${Blue}检测到新文件，设置权限中...${Font}"
+    # 获取需要重设权限的文件列表
     check_file_time
     if grep -q '<' ${PWD}/lock.sc.cp; then
         # 设置文件权限
@@ -273,11 +282,11 @@ if [[ "$file_hash_old" != "$file_hash_new" || "$dir_hash_old" != "$dir_hash_new"
         fi
         IFS=$SAVEIFS
     else
-        echo -e "${Blue}无需设置${Font}"
+        echo -e "${Blue}文件无需设置${Font}"
     fi
 else
     # hash相同
-    echo -e "${Blue}无需设置${Font}"
+    echo -e "${Blue}文件无需设置${Font}"
 fi
 }
 
