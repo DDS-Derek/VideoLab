@@ -23,5 +23,5 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one
-          short-description: nas-tools-all-in-one 一个更好用的nas-tools安装工具
+          short-description: VideoLab 关于影视自动化相关的脚本和容器合集
           readme-filepath: ./README-DOCKERHUB.md
