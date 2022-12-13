@@ -214,10 +214,10 @@ if [ ! -f ${PWD}/lock.sc ]; then
 fi
 # 获取旧文件列表hash
 file_hash_old=$(cat ${PWD}/lock.sc)
-find ${Media_DIR} -type f | sha256sum > ${PWD}/lock.sc
+find ${Media_DIR} -type f -printf "%TY-%Tm-%Td_%TH:%TM:%TS_%Tz  %p\n" | sha256sum > ${PWD}/lock.sc
 # 获取旧文件夹列表hash
 dir_hash_old=$(cat ${PWD}/lock.sd)
-find ${Media_DIR} -type d | sha256sum > ${PWD}/lock.sd
+find ${Media_DIR} -type d -printf "%TY-%Tm-%Td_%TH:%TM:%TS_%Tz  %p\n" | sha256sum > ${PWD}/lock.sd
 # 获取新文件列表hash
 file_hash_new=$(cat ${PWD}/lock.sc)
 dir_hash_new=$(cat ${PWD}/lock.sd)
