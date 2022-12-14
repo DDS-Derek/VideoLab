@@ -8,14 +8,25 @@ Green="\033[32m"
 Red="\033[31m" 
 Blue="\033[34m"
 Font="\033[0m"
+INFO="[${Green}INFO${Font}]"
+ERROR="[${Red}ERROR${Font}]"
+WARN="[${Blue}WARN${Font}]"
+
+check_logs(){
+if [ ! -d ./logs ]; then
+    mkdir ./logs
+fi
+}
 
 check_dir(){
 # chown dir
+
 find ${Media_DIR} \
     -type d \
     ! -group ${PGID} \
     -or \
-    ! -user ${PUID}
+    ! -user ${PUID} >> ./logs/dir_changes_list.log
+
 find ${Media_DIR} \
     -type d \
     ! -group ${PGID} \
@@ -26,7 +37,8 @@ find ${Media_DIR} \
 # chmod dir
 find ${Media_DIR} \
     -type d \
-    ! -perm ${CFVR}
+    ! -perm ${CFVR} >> ./logs/dir_changes_list.log
+
 find ${Media_DIR} \
     -type d \
     ! -perm ${CFVR} \
@@ -39,7 +51,8 @@ find ${Media_DIR} \
     -type f \
     ! -group ${PGID} \
     -or \
-    ! -user ${PUID}
+    ! -user ${PUID} >> ./logs/file_changes_list.log
+
 find ${Media_DIR} \
     -type f \
     ! -group ${PGID} \
@@ -50,7 +63,8 @@ find ${Media_DIR} \
 # chmod file
 find ${Media_DIR} \
     -type f \
-    ! -perm ${CFVR}
+    ! -perm ${CFVR} >> ./logs/file_changes_list.log
+
 find ${Media_DIR} \
     -type f \
     ! -perm ${CFVR} \
@@ -58,6 +72,7 @@ find ${Media_DIR} \
 }
 
 check_change(){
+check_logs
 check_dir
 check_file
 }
