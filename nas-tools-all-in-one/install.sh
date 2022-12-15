@@ -1,9 +1,20 @@
 #!/usr/bin/env bash
 
-Green="\033[32m"
-Font="\033[0m"
-Red="\033[31m" 
 Blue="\033[34m"
+Green="\033[32m"
+Red="\033[31m"
+Font="\033[0m"
+INFO="[${Green}INFO${Font}]"
+ERROR="[${Red}ERROR${Font}]"
+Time=$(date +"%Y-%m-%d %T")
+INFO(){
+echo -e "${Time} ${INFO} ${TEXT}"
+echo -e "${Time} INFO  ${TEXT}" >> ./logs/main.log
+}
+ERROR(){
+echo -e "${Time} ${ERROR} ${TEXT}"
+echo -e "${Time} ERROR  ${TEXT}" >> ./logs/main.log
+}
 
 BUILD_TIME=2022-12-03
 
