@@ -10,15 +10,27 @@ Blue="\033[34m"
 Font="\033[0m"
 INFO="[${Green}INFO${Font}]"
 ERROR="[${Red}ERROR${Font}]"
-WARN="[${Blue}WARN${Font}]"
 Time=$(date +"%Y-%m-%d %T")
+
+INFO(){
+echo -e "${Time} ${INFO} ${TEXT}"
+echo -e "${Time} INFO  ${TEXT}" >> ./logs/main.log
+}
+ERROR(){
+echo -e "${Time} ${ERROR} ${TEXT}"
+echo -e "${Time} ERROR  ${TEXT}" >> ./logs/main.log
+}
 
 check_logs(){
 if [ ! -d ./logs ]; then
     mkdir ./logs
+    TEXT='创建日志文件夹成功'
+    INFO
 fi
 if [ ! -f ./logs/main.log ]; then
     touch ./logs/main.log
+    TEXT='创建主日志文件成功'
+    INFO
 fi
 }
 
@@ -37,11 +49,11 @@ find ${Media_DIR} \
     ! -user ${PUID} \
     -exec chown ${PUID}:${PGID} {} \;
 if [ $? -eq 0 ]; then
-    echo -e "${INFO} 文件夹所属组设置成功"
-    echo -e "${Time} INFO 文件夹所属组设置成功" >> ./logs/main.log
+    TEXT='文件夹所属组设置成功'
+    INFO
 else
-    echo -e "${ERROR} 文件夹所属组设置失败"
-    echo -e "${Time} ERROR 文件夹所属组设置失败" >> ./logs/main.log
+    TEXT='文件夹所属组设置失败'
+    ERROR
     exit 1
 fi
 
@@ -55,11 +67,11 @@ find ${Media_DIR} \
     ! -perm ${CFVR} \
     -exec chmod ${CFVR} {} \;
 if [ $? -eq 0 ]; then
-    echo -e "${INFO} 文件夹访问权限设置成功"
-    echo -e "${Time} INFO 文件夹访问权限设置成功" >> ./logs/main.log
+    TEXT='文件夹访问权限设置成功'
+    INFO
 else
-    echo -e "${ERROR} 文件夹访问权限设置失败"
-    echo -e "${Time} ERROR 文件夹访问权限设置失败" >> ./logs/main.log
+    TEXT='文件夹访问权限设置失败'
+    ERROR
     exit 1
 fi
 }
@@ -79,11 +91,11 @@ find ${Media_DIR} \
     ! -user ${PUID} \
     -exec chown ${PUID}:${PGID} {} \;
 if [ $? -eq 0 ]; then
-    echo -e "${INFO} 文件所属组设置成功"
-    echo -e "${Time} INFO 文件所属组设置成功" >> ./logs/main.log
+    TEXT='文件所属组设置成功'
+    INFO
 else
-    echo -e "${ERROR} 文件所属组设置失败"
-    echo -e "${Time} ERROR 文件所属组设置失败" >> ./logs/main.log
+    TEXT='文件所属组设置失败'
+    ERROR
     exit 1
 fi
 
@@ -97,19 +109,19 @@ find ${Media_DIR} \
     ! -perm ${CFVR} \
     -exec chmod ${CFVR} {} \;
 if [ $? -eq 0 ]; then
-    echo -e "${INFO} 文件访问权限设置成功"
-    echo -e "${Time} INFO 文件访问权限设置成功" >> ./logs/main.log
+    TEXT='文件访问权限设置成功'
+    INFO
 else
-    echo -e "${ERROR} 文件访问权限设置失败"
-    echo -e "${Time} ERROR 文件访问权限设置失败" >> ./logs/main.log
+    TEXT='文件访问权限设置失败'
+    ERROR
     exit 1
 fi
 }
 
-check_change(){
+main(){
 check_logs
 check_dir
 check_file
 }
 
-check_change
+main
