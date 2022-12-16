@@ -22,8 +22,8 @@ echo -e "${Time} ERROR  ${TEXT}" >> ${config_dir}/scripts/File_Permission_Change
 }
 
 check_logs(){
-if [ ! -d ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log ]; then
-    mkdir -p ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log
+if [ ! -d ${config_dir}/scripts/File_Permission_Changes_Plus/logs ]; then
+    mkdir -p ${config_dir}/scripts/File_Permission_Changes_Plus/logs
     TEXT='创建日志文件夹成功'
     INFO
 fi
