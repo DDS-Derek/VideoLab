@@ -582,7 +582,7 @@ services:
      #- REPO_URL=https://ghproxy.com/https://github.com/jxxghp/nas-tools.git
     restart: always
     network_mode: bridge
-    hostname: nas-tools
+    hostname: ${container_name}
     container_name: ${container_name}
 EOF
     cd ${config_dir}/nas-tools
