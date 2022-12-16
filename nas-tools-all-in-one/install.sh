@@ -515,6 +515,7 @@ fi
 get_container_name(){
 echo -e "${Green}请输入容器名称${Font}"
 read -ep "NAME:" container_name
+TEXT='设置成功！' && INFO
 }
 
 get_nastool_port(){
