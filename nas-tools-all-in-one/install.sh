@@ -25,12 +25,10 @@ INFO="[${Green}INFO${Font}]"
 ERROR="[${Red}ERROR${Font}]"
 Time=$(date +"%Y-%m-%d %T")
 INFO(){
-echo -e "${Time} ${INFO} ${TEXT}"
-echo -e "${Time} INFO  ${TEXT}" >> ./logs/main.log
+echo -e "${INFO} ${TEXT}"
 }
 ERROR(){
-echo -e "${Time} ${ERROR} ${TEXT}"
-echo -e "${Time} ERROR  ${TEXT}" >> ./logs/main.log
+echo -e "${ERROR} ${TEXT}"
 }
 
 #root权限
@@ -43,9 +41,19 @@ root_need(){
 }
 
 dsm_ipkg_install(){
+TEXT='正在安装IPKG中...'
+INFO
 wget http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/syno-i686-bootstrap_1.2-7_i686.xsh
 chmod +x syno-i686-bootstrap_1.2-7_i686.xsh
 sh syno-i686-bootstrap_1.2-7_i686.xsh
+if [ $? -eq 0 ]; then
+    TEXT='IPKG安装成功'
+    INFO
+else
+    TEXT='IPKG安装失败'
+    ERROR
+    exit 1
+fi
 }
 
 # 软件包安装
@@ -61,6 +69,9 @@ package_installation(){
         OSNAME='dsm'
         if ! which ipkg; then
             dsm_ipkg_install
+        else
+            TEXT='IPKG 已安装'
+            INFO
         fi
         ipkg update
         ipkg install lsof
@@ -100,7 +111,8 @@ package_installation(){
         apk add wget zip unzip curl lsof
     else
         OSNAME='unknow'
-        echo -e "${Red}错误：此系统无法使用此脚本${Font}"
+        TEXT='此系统无法使用此脚本'
+        ERROR
         exit 1
     fi
 }
@@ -138,13 +150,16 @@ if [ $? -eq 0 ]; then
         --cleanup \
         ${containers_name}
     if [ $? -eq 0 ]; then
-        echo -e "${Green}更新成功${Font}"
+        TEXT='更新成功'
+        INFO
     else
-        echo -e "${Red}更新失败，请重新尝试${Font}"
+        TEXT='更新失败，请重新尝试'
+        ERROR
         exit 1
     fi
 else
-    echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+    TEXT='列出所有容器失败，无法继续更新'
+    ERROR
     exit 1
 fi
 }
@@ -172,13 +187,16 @@ if [[ "$(docker inspect nas-tools-all-in-one-watchtower 2> /dev/null | grep '"Na
             containrrr/watchtower \
             --cleanup ${containers_name} --schedule "0 0 0 * * *"
         if [ $? -eq 0 ]; then
-            echo -e "${Green}定时任务设置成功${Font}"
+            TEXT='定时任务设置成功'
+            INFO
         else
-            echo -e "${Red}定时任务设置失败，请重新尝试${Font}"
+            TEXT='定时任务设置失败，请重新尝试'
+            ERROR
             exit 1
         fi
     else
-        echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+        TEXT='列出所有容器失败，无法继续更新'
+        ERROR
         exit 1
     fi
 else
@@ -186,16 +204,20 @@ else
     echo -e "${Green}检测到旧定时任务，清理旧定时任务中...${Font}"
     docker stop nas-tools-all-in-one-watchtower
     if [ $? -eq 0 ]; then
-        echo -e "${Green}停止旧定时任务成功${Font}"
+        TEXT='停止旧定时任务成功'
+        INFO
     else
-        echo -e "${Red}停止旧容器失败，请尝试手动停止 nas-tools-all-in-one-watchtower 容器${Font}"
+        TEXT='停止旧容器失败，请尝试手动停止 nas-tools-all-in-one-watchtower 容器'
+        ERROR
         exit 1
     fi
     docker rm -f nas-tools-all-in-one-watchtower
     if [ $? -eq 0 ]; then
-        echo -e "${Green}删除旧定时任务成功${Font}"
+        TEXT='删除旧定时任务成功'
+        INFO
     else
-        echo -e "${Red}删除旧容器失败，请尝试手动删除 nas-tools-all-in-one-watchtower 容器${Font}"
+        TEXT='删除旧容器失败，请尝试手动删除 nas-tools-all-in-one-watchtower 容器'
+        ERROR
         exit 1
     fi
     docker ps --all --format "table {{.Names}}"
@@ -217,13 +239,16 @@ else
             containrrr/watchtower \
             --cleanup ${containers_name} --schedule "0 0 0 * * *"
         if [ $? -eq 0 ]; then
-            echo -e "${Green}定时任务设置成功${Font}"
+            TEXT='定时任务设置成功'
+            INFO
         else
-            echo -e "${Red}定时任务设置失败，请重新尝试${Font}"
+            TEXT='定时任务设置失败，请重新尝试'
+            ERROR
             exit 1
         fi
     else
-        echo -e "${Red}列出所有容器失败，无法继续更新${Font}"
+        TEXT='列出所有容器失败，无法继续更新'
+        ERROR
         exit 1
     fi
 fi
@@ -245,11 +270,13 @@ update_containers(){
     timing_update_containers
     ;;
     3)
+    clear
     main_return
     ;;
     *)
     clear
-    echo -e "${Red}请输入正确数字 [1-3]${Font}"
+    TEXT='请输入正确数字 [1-3]'
+    ERROR
     update_containers
     ;;
     esac
@@ -312,7 +339,6 @@ read -ep "DIR:" NEW_media_dir
 echo 
 }
 choose_docker_install_model(){
-    clear
     echo -e "${Blue}容器安装模式选择${Font}\n"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
     echo -e "1、docker-cli安装模式"
@@ -328,7 +354,8 @@ choose_docker_install_model(){
     ;;
     *)
     clear
-    echo -e "${Red}请输入正确数字 [1-2]${Font}"
+    TEXT='请输入正确数字 [1-2]'
+    ERROR
     choose_docker_install_model
     ;;
     esac
@@ -382,7 +409,8 @@ EOF
 #. ${config_dir}/nastools_all_in_one/basic_settings.sh
 
 if [ $? -eq 0 ]; then
-echo -e "${Green}保存成功${Font}"
+    TEXT='保存成功'
+    INFO
 fi
 }
 show_basic_settings(){
@@ -457,10 +485,12 @@ show_basic_settings(){
         ;;
         10)
         save_basic_settings
+        clear
         ;;
         *)
         clear
-        echo -e "${Red}请输入正确数字 [1-10]${Font}"
+        TEXT='请输入正确数字 [1-10]'
+        ERROR
         show_basic_settings
         ;;
         esac
@@ -480,6 +510,7 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     get_config_dir
     get_media_dir
     get_download_dir
+    clear
     choose_docker_install_model
     clear
     show_basic_settings
@@ -516,10 +547,12 @@ read -ep "PORT:" NAStool_port
 TEST_PORT=${NAStool_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口'
+    ERROR
     get_nastool_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！'
+    INFO
 fi
 }
 get_nastool_update(){
@@ -575,9 +608,11 @@ EOF
     cd ${config_dir}/nas-tools
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}NAStools 安装成功${Font}"
+        TEXT='NAStools 安装成功'
+        INFO
     else
-        echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='NAStools 安装失败，请尝试重新运行脚本'
+        ERROR
         exit 1
     fi
 fi
@@ -596,9 +631,11 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --restart always \
         jxxghp/nas-tools:latest
     if [ $? -eq 0 ]; then
-        echo -e "${Green}NAStools 安装成功${Font}"
+        TEXT='NAStools 安装成功'
+        INFO
     else
-        echo -e "${Red}NAStools 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='NAStools 安装失败，请尝试重新运行脚本'
+        ERROR
         exit 1
     fi
 fi
@@ -637,7 +674,8 @@ choose_downloader(){
     ;;
     *)
     clear
-    echo -e "${Red}请输入正确数字 [1-6]${Font}"
+    TEXT='请输入正确数字 [1-6]'
+    ERROR
     choose_downloader
     ;;
     esac
@@ -650,10 +688,12 @@ read -ep "PORT:" tr_port
 TEST_PORT=${tr_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口'
+    ERROR
     tr_web_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！'
+    INFO
 fi
 echo
 }
@@ -664,10 +704,12 @@ read -ep "PORT:" tr_port_torrent
 TEST_PORT=${tr_port_torrent}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口'
+    ERROR
     tr_port_torrent_i
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！'
+    INFO
 fi
 echo
 }
@@ -1130,7 +1172,8 @@ choose_mediaserver(){
     ;;
     *)
     clear
-    echo -e "${Red}请输入正确数字 [1-4]${Font}"
+    TEXT='请输入正确数字 [1-4]'
+    ERROR
     choose_mediaserver
     ;;
     esac
@@ -1479,18 +1522,19 @@ manual_install(){
     manual_install
     ;;
     5)
+    clear
     main_return
     ;;
     *)
     clear
-    echo -e "${Red}请输入正确数字 [1-5]${Font}"
+    TEXT='请输入正确数字 [1-5]'
+    ERROR
     manual_install
     ;;
     esac
 }
 
 main_return(){
-    clear
     echo -e "${Blue}use os: ${OSNAME}${Font}"
     echo -e "——————————————————————————————————————————————————————————————————————————————————
  _   _    _    ____  _              _ 
@@ -1510,7 +1554,7 @@ This is free software, licensed under the GNU General Public License.
     echo -e "3、更新容器"
     echo -e "4、退出脚本"
     echo -e "——————————————————————————————————————————————————————————————————————————————————"
-    read -ep "请输入数字 [1-5]:" num
+    read -ep "请输入数字 [1-4]:" num
     case "$num" in
         1)
         direct_install
@@ -1529,8 +1573,9 @@ This is free software, licensed under the GNU General Public License.
         ;;
         *)
         clear
-        echo -e "${Red}请输入正确数字 [1-5]${Font}"
-        main
+        TEXT='请输入正确数字 [1-4]'
+        ERROR
+        main_return
         ;;
         esac
 }
@@ -1543,6 +1588,8 @@ main(){
     clear
     # 安装软件包
     package_installation
+    # 清理命令行
+    clear
     main_return
 }
 
