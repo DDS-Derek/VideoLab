@@ -512,6 +512,11 @@ else
 fi
 }
 
+get_container_name(){
+echo -e "${Green}请输入容器名称${Font}"
+read -ep "NAME:" container_name
+}
+
 get_nastool_port(){
 echo -e "${Green}请输入NAStool Web 访问端口（默认 3000 ）${Font}"
 read -ep "PORT:" NAStool_port
@@ -540,6 +545,7 @@ TEXT='设置成功！' && INFO
 nastool_install(){
 clear
 echo -e "${Blue}NAStool 安装${Font}\n"
+get_container_name
 get_nastool_port
 get_nastool_update
 sleep 2
@@ -576,7 +582,7 @@ services:
     restart: always
     network_mode: bridge
     hostname: nas-tools
-    container_name: nas-tools
+    container_name: ${container_name}
 EOF
     cd ${config_dir}/nas-tools
     docker-compose up -d
@@ -590,8 +596,8 @@ fi
 if [[ ${docker_install_model} = 'cli' ]]; then
     clear
     docker run -d \
-        --name nas-tools \
-        --hostname nas-tools \
+        --name ${container_name} \
+        --hostname ${container_name} \
         -p ${NAStool_port}:3000\
         -v ${config_dir}/nas-tools/config:/config \
         -v ${media_dir}:/media \
@@ -680,6 +686,7 @@ echo
 tr_install(){
 clear
 echo -e "${Blue}Transmission 安装${Font}\n"
+get_container_name
 tr_web_port
 tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
@@ -722,7 +729,7 @@ version: "2.1"
 services:
   transmission:
     image: ddsderek/nas-tools-all-in-one:transmission-${BUILD_TIME}
-    container_name: transmission
+    container_name: ${container_name}
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -752,7 +759,7 @@ fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -d \
-    --name=transmission \
+    --name=${container_name} \
     -e PUID=${PUID} \
     -e PGID=${PGID} \
     -e TZ=${TZ} \
@@ -779,6 +786,7 @@ fi
 tr_sk_install(){
 clear
 echo -e "${Blue}Transmission Skip Patch 安装${Font}\n"
+get_container_name
 tr_web_port
 tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
@@ -821,7 +829,7 @@ version: "2.1"
 services:
   transmission_sk:
     image: ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
-    container_name: transmission_sk
+    container_name: ${container_name}
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -852,7 +860,7 @@ fi
 
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -d \
-    --name=transmission_sk \
+    --name=${container_name} \
     -e PUID=${PUID} \
     -e PGID=${PGID} \
     -e TZ=${TZ} \
@@ -908,6 +916,7 @@ echo
 qb_install(){
 clear
 echo -e "${Blue}qBittorrent 安装${Font}\n"
+get_container_name
 qb_web_port
 qb_port_torrent_i
 sleep 2
@@ -939,11 +948,11 @@ version: "2.0"
 services:
   qbittorrent:
     image: ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
-    container_name: qbittorrent
+    container_name: ${container_name}
     restart: always
     tty: true
     network_mode: bridge
-    hostname: qbitorrent
+    hostname: ${container_name}
     volumes:
       - ${config_dir}/qbittorrent/config:/data
       - ${download_dir}:/downloads
@@ -984,8 +993,8 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         -p ${qb_port_torrent}:${qb_port_torrent}/udp \
         --tmpfs /tmp \
         --restart always \
-        --name qbittorrent \
-        --hostname qbittorrent \
+        --name ${container_name} \
+        --hostname ${container_name} \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
     if [ $? -eq 0 ]; then
         TEXT='qBittorrent 安装成功' && INFO
@@ -999,6 +1008,7 @@ fi
 qb_sk_install(){
 clear
 echo -e "${Blue}qBittorrent Skip Patch 安装${Font}\n"
+get_container_name
 qb_web_port
 qb_port_torrent_i
 sleep 2
@@ -1030,11 +1040,11 @@ version: "2.0"
 services:
   qbittorrent_sk:
     image: ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
-    container_name: qbittorrent_sk
+    container_name: ${container_name}
     restart: always
     tty: true
     network_mode: bridge
-    hostname: qbittorrent_sk
+    hostname: ${container_name}
     volumes:
       - ${config_dir}/qbittorrent_sk/config:/data
       - ${download_dir}:/downloads
@@ -1075,8 +1085,8 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         -p ${qb_port_torrent}:${qb_port_torrent}/udp \
         --tmpfs /tmp \
         --restart always \
-        --name qbittorrent_sk \
-        --hostname qbittorrent_sk \
+        --name ${container_name} \
+        --hostname ${container_name} \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
     if [ $? -eq 0 ]; then
         TEXT='qBittorrent 安装成功' && INFO
@@ -1158,6 +1168,7 @@ echo
 plex_install(){
 clear
 echo -e "${Blue}Plex 安装${Font}\n"
+get_container_name
 plex_web_port
 sleep 2
 
@@ -1189,7 +1200,7 @@ if [[ ${docker_install_model} = 'compose' ]]; then
 version: '2'
 services:
   plex:
-    container_name: plex
+    container_name: ${container_name}
     image: plexinc/pms-docker
     restart: always
     ports:
@@ -1208,7 +1219,7 @@ services:
       - PLEX_GID=${PGID}
 #      - PLEX_CLAIM=<claimToken>
 #      - ADVERTISE_IP=http://<hostIPAddress>:32400/
-    hostname: plex
+    hostname: ${container_name}
     volumes:
       - ${config_dir}/plex/config:/config
       - ${config_dir}/plex/transcode:/transcode
@@ -1227,10 +1238,10 @@ fi
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run \
         -d \
-        --name plex \
+        --name ${container_name} \
         -p ${plex_port}:32400/tcp \
         -e TZ="${TZ}" \
-        -h plex \
+        -h ${container_name} \
         -v ${config_dir}/plex/config:/config \
         -v ${config_dir}/plex/transcode:/transcode \
         -v ${media_dir}:/data \
@@ -1262,6 +1273,7 @@ echo
 emby_install(){
 clear
 echo -e "${Blue}Emby 安装${Font}\n"
+get_container_name
 emby_web_port
 sleep 2
 
@@ -1291,7 +1303,7 @@ version: "2.3"
 services:
   emby:
     image: emby/embyserver:latest
-    container_name: embyserver
+    container_name: ${container_name}
 #    runtime: nvidia
     environment:
       - UID=${PUID}
@@ -1320,7 +1332,7 @@ EOF
 fi
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -d \
-        --name embyserver \
+        --name ${container_name} \
         --volume ${config_dir}/emby/config:/config \
         --volume ${media_dir}:/data \
         --publish ${emby_port}:8096 \
@@ -1355,6 +1367,7 @@ echo
 jellyfin_install(){
 clear
 echo -e "${Blue}Jellyfin 安装${Font}\n"
+get_container_name
 jellyfin_web_port
 sleep 2
 
@@ -1387,7 +1400,7 @@ version: '3.5'
 services:
   jellyfin:
     image: jellyfin/jellyfin
-    container_name: jellyfin
+    container_name: ${container_name}
     user: ${PUID}:${PGID}
     ports:
       - ${jellyfin_port}:8096
@@ -1410,7 +1423,7 @@ EOF
 fi
 if [[ ${docker_install_model} = 'cli' ]]; then
     docker run -d \
-        --name jellyfin \
+        --name ${container_name} \
         --user ${PUID}:${PGID} \
         --publish ${jellyfin_port}:8096 \
         --volume ${config_dir}/jellyfin/config:/config \
