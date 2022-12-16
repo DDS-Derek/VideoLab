@@ -7,7 +7,7 @@ bash <(wget --no-check-certificate -qO- 'https://raw.githubusercontent.com/DDS-D
 bash <(curl https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/nas-tools-all-in-one/install.sh)
 ```
 ```bash
-curl -o install.sh https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/install.sh && bash install.sh && rm install.sh
+curl -o install.sh https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/nas-tools-all-in-one/install.sh && bash install.sh && rm install.sh
 ```
 
 - 向导安装
