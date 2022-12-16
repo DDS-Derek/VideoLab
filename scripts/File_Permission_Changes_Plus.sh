@@ -14,21 +14,21 @@ Time=$(date +"%Y-%m-%d %T")
 
 INFO(){
 echo -e "${Time} ${INFO} ${TEXT}"
-echo -e "${Time} INFO  ${TEXT}" >> ./logs/main.log
+echo -e "${Time} INFO  ${TEXT}" >> ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log
 }
 ERROR(){
 echo -e "${Time} ${ERROR} ${TEXT}"
-echo -e "${Time} ERROR  ${TEXT}" >> ./logs/main.log
+echo -e "${Time} ERROR  ${TEXT}" >> ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log
 }
 
 check_logs(){
-if [ ! -d ./logs ]; then
-    mkdir ./logs
+if [ ! -d ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log ]; then
+    mkdir -p ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log
     TEXT='创建日志文件夹成功'
     INFO
 fi
-if [ ! -f ./logs/main.log ]; then
-    touch ./logs/main.log
+if [ ! -f ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log ]; then
+    touch ${config_dir}/scripts/File_Permission_Changes_Plus/logs/main.log
     TEXT='创建主日志文件成功'
     INFO
 fi
@@ -40,7 +40,7 @@ find ${Media_DIR} \
     -type d \
     ! -group ${PGID} \
     -or \
-    ! -user ${PUID} > ./logs/dir_changes_list.log
+    ! -user ${PUID} > ${config_dir}/scripts/File_Permission_Changes_Plus/logs/dir_changes_list.log
 
 find ${Media_DIR} \
     -type d \
@@ -60,7 +60,7 @@ fi
 # chmod dir
 find ${Media_DIR} \
     -type d \
-    ! -perm ${CFVR} >> ./logs/dir_changes_list.log
+    ! -perm ${CFVR} >> ${config_dir}/scripts/File_Permission_Changes_Plus/logs/dir_changes_list.log
 
 find ${Media_DIR} \
     -type d \
@@ -82,7 +82,7 @@ find ${Media_DIR} \
     -type f \
     ! -group ${PGID} \
     -or \
-    ! -user ${PUID} > ./logs/file_changes_list.log
+    ! -user ${PUID} > ${config_dir}/scripts/File_Permission_Changes_Plus/logs/file_changes_list.log
 
 find ${Media_DIR} \
     -type f \
@@ -102,7 +102,7 @@ fi
 # chmod file
 find ${Media_DIR} \
     -type f \
-    ! -perm ${CFVR} >> ./logs/file_changes_list.log
+    ! -perm ${CFVR} >> ${config_dir}/scripts/File_Permission_Changes_Plus/logs/file_changes_list.log
 
 find ${Media_DIR} \
     -type f \
