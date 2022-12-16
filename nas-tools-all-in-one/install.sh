@@ -1,5 +1,22 @@
 #!/usr/bin/env bash
 
+# ———————————————————————————————————————————————————————————————————————————
+#  _   _    _    ____  _              _ 
+# | \ | |  / \  / ___|| |_ ___   ___ | |
+# |  \| | / _ \ \___ \| __/ _ \ / _ \| |
+# | |\  |/ ___ \ ___) | || (_) | (_) | |
+# |_| \_/_/   \_\____/ \__\___/ \___/|_|
+#
+# Copyright (c) 2022 DDSRem <https://blog.ddsrem.com>
+#
+# This is free software, licensed under the GNU General Public License.
+#
+  BUILD_TIME=2022-12-03
+# ———————————————————————————————————————————————————————————————————————————
+
+
+
+
 Blue="\033[34m"
 Green="\033[32m"
 Red="\033[31m"
@@ -16,12 +33,11 @@ echo -e "${Time} ${ERROR} ${TEXT}"
 echo -e "${Time} ERROR  ${TEXT}" >> ./logs/main.log
 }
 
-BUILD_TIME=2022-12-03
-
 #root权限
 root_need(){
     if [[ $EUID -ne 0 ]]; then
-        echo -e "${Red}错误：此脚本必须以 root 身份运行！${Font}"
+        TEXT='此脚本必须以 root 身份运行！'
+        ERROR
         exit 1
     fi
 }
@@ -30,7 +46,6 @@ dsm_ipkg_install(){
 wget http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/syno-i686-bootstrap_1.2-7_i686.xsh
 chmod +x syno-i686-bootstrap_1.2-7_i686.xsh
 sh syno-i686-bootstrap_1.2-7_i686.xsh
-touch /etc/nas-tools-all-in-one-ipkg.lock
 }
 
 # 软件包安装
@@ -39,11 +54,12 @@ package_installation(){
     echo -e "${Blue}use system: ${_os}${Font}"
     if [ ${_os} == "Darwin" ]; then
         OSNAME='macos'
-        echo -e "${Red}错误：此系统无法使用此脚本${Font}"
+        TEXT='此系统无法使用此脚本'
+        ERROR
         exit 1
     elif [ -f /etc/VERSION ]; then
         OSNAME='dsm'
-        if [ ! -f /etc/VERSION ]; then
+        if ! which ipkg; then
             dsm_ipkg_install
         fi
         ipkg update
