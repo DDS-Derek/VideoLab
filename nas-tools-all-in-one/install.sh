@@ -34,24 +34,20 @@ echo -e "${ERROR} ${TEXT}"
 #root权限
 root_need(){
     if [[ $EUID -ne 0 ]]; then
-        TEXT='此脚本必须以 root 身份运行！'
-        ERROR
+        TEXT='此脚本必须以 root 身份运行！' && ERROR
         exit 1
     fi
 }
 
 dsm_ipkg_install(){
-TEXT='正在安装IPKG中...'
-INFO
+TEXT='正在安装IPKG中...' && INFO
 wget http://ipkg.nslu2-linux.org/feeds/optware/syno-i686/cross/unstable/syno-i686-bootstrap_1.2-7_i686.xsh
 chmod +x syno-i686-bootstrap_1.2-7_i686.xsh
 sh syno-i686-bootstrap_1.2-7_i686.xsh
 if [ $? -eq 0 ]; then
-    TEXT='IPKG安装成功'
-    INFO
+    TEXT='IPKG安装成功' && INFO
 else
-    TEXT='IPKG安装失败'
-    ERROR
+    TEXT='IPKG安装失败' && ERROR
     exit 1
 fi
 }
@@ -62,16 +58,14 @@ package_installation(){
     echo -e "${Blue}use system: ${_os}${Font}"
     if [ ${_os} == "Darwin" ]; then
         OSNAME='macos'
-        TEXT='此系统无法使用此脚本'
-        ERROR
+        TEXT='此系统无法使用此脚本' && ERROR
         exit 1
     elif [ -f /etc/VERSION ]; then
         OSNAME='dsm'
         if ! which ipkg; then
             dsm_ipkg_install
         else
-            TEXT='IPKG 已安装'
-            INFO
+            TEXT='IPKG 已安装' && INFO
         fi
         ipkg update
         ipkg install lsof
@@ -111,8 +105,7 @@ package_installation(){
         apk add wget zip unzip curl lsof
     else
         OSNAME='unknow'
-        TEXT='此系统无法使用此脚本'
-        ERROR
+        TEXT='此系统无法使用此脚本' && ERROR
         exit 1
     fi
 }
@@ -150,16 +143,13 @@ if [ $? -eq 0 ]; then
         --cleanup \
         ${containers_name}
     if [ $? -eq 0 ]; then
-        TEXT='更新成功'
-        INFO
+        TEXT='更新成功' && INFO
     else
-        TEXT='更新失败，请重新尝试'
-        ERROR
+        TEXT='更新失败，请重新尝试' && ERROR
         exit 1
     fi
 else
-    TEXT='列出所有容器失败，无法继续更新'
-    ERROR
+    TEXT='列出所有容器失败，无法继续更新' && ERROR
     exit 1
 fi
 }
@@ -187,16 +177,13 @@ if [[ "$(docker inspect nas-tools-all-in-one-watchtower 2> /dev/null | grep '"Na
             containrrr/watchtower \
             --cleanup ${containers_name} --schedule "0 0 0 * * *"
         if [ $? -eq 0 ]; then
-            TEXT='定时任务设置成功'
-            INFO
+            TEXT='定时任务设置成功' && INFO
         else
-            TEXT='定时任务设置失败，请重新尝试'
-            ERROR
+            TEXT='定时任务设置失败，请重新尝试' && ERROR
             exit 1
         fi
     else
-        TEXT='列出所有容器失败，无法继续更新'
-        ERROR
+        TEXT='列出所有容器失败，无法继续更新' && ERROR
         exit 1
     fi
 else
@@ -204,20 +191,16 @@ else
     echo -e "${Green}检测到旧定时任务，清理旧定时任务中...${Font}"
     docker stop nas-tools-all-in-one-watchtower
     if [ $? -eq 0 ]; then
-        TEXT='停止旧定时任务成功'
-        INFO
+        TEXT='停止旧定时任务成功' && INFO
     else
-        TEXT='停止旧容器失败，请尝试手动停止 nas-tools-all-in-one-watchtower 容器'
-        ERROR
+        TEXT='停止旧容器失败，请尝试手动停止 nas-tools-all-in-one-watchtower 容器' && ERROR
         exit 1
     fi
     docker rm -f nas-tools-all-in-one-watchtower
     if [ $? -eq 0 ]; then
-        TEXT='删除旧定时任务成功'
-        INFO
+        TEXT='删除旧定时任务成功' && INFO
     else
-        TEXT='删除旧容器失败，请尝试手动删除 nas-tools-all-in-one-watchtower 容器'
-        ERROR
+        TEXT='删除旧容器失败，请尝试手动删除 nas-tools-all-in-one-watchtower 容器' && ERROR
         exit 1
     fi
     docker ps --all --format "table {{.Names}}"
@@ -239,16 +222,13 @@ else
             containrrr/watchtower \
             --cleanup ${containers_name} --schedule "0 0 0 * * *"
         if [ $? -eq 0 ]; then
-            TEXT='定时任务设置成功'
-            INFO
+            TEXT='定时任务设置成功' && INFO
         else
-            TEXT='定时任务设置失败，请重新尝试'
-            ERROR
+            TEXT='定时任务设置失败，请重新尝试' && ERROR
             exit 1
         fi
     else
-        TEXT='列出所有容器失败，无法继续更新'
-        ERROR
+        TEXT='列出所有容器失败，无法继续更新' && ERROR
         exit 1
     fi
 fi
@@ -275,8 +255,7 @@ update_containers(){
     ;;
     *)
     clear
-    TEXT='请输入正确数字 [1-3]'
-    ERROR
+    TEXT='请输入正确数字 [1-3]' && ERROR
     update_containers
     ;;
     esac
@@ -354,8 +333,7 @@ choose_docker_install_model(){
     ;;
     *)
     clear
-    TEXT='请输入正确数字 [1-2]'
-    ERROR
+    TEXT='请输入正确数字 [1-2]' && ERROR
     choose_docker_install_model
     ;;
     esac
@@ -409,8 +387,7 @@ EOF
 #. ${config_dir}/nastools_all_in_one/basic_settings.sh
 
 if [ $? -eq 0 ]; then
-    TEXT='保存成功'
-    INFO
+    TEXT='保存成功' && INFO
 fi
 }
 show_basic_settings(){
@@ -489,8 +466,7 @@ show_basic_settings(){
         ;;
         *)
         clear
-        TEXT='请输入正确数字 [1-10]'
-        ERROR
+        TEXT='请输入正确数字 [1-10]' && ERROR
         show_basic_settings
         ;;
         esac
@@ -547,12 +523,10 @@ read -ep "PORT:" NAStool_port
 TEST_PORT=${NAStool_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    TEXT='端口被占用，请重新输入新端口'
-    ERROR
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     get_nastool_port
 else
-    TEXT='设置成功！'
-    INFO
+    TEXT='设置成功！' && INFO
 fi
 }
 get_nastool_update(){
@@ -565,12 +539,15 @@ fi
 if [[ ${NAStool_update} == [Nn] ]]; then
 NAStool_update_eld=false
 fi
+TEXT='设置成功！' && INFO
 }
 nastool_install(){
 clear
 echo -e "${Blue}NAStool 安装${Font}\n"
 get_nastool_port
 get_nastool_update
+sleep 2
+
 . /etc/nastools_all_in_one/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
 if [ ! -d ${config_dir}/nas-tools ]; then
@@ -608,11 +585,9 @@ EOF
     cd ${config_dir}/nas-tools
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        TEXT='NAStools 安装成功'
-        INFO
+        TEXT='NAStools 安装成功' && INFO
     else
-        TEXT='NAStools 安装失败，请尝试重新运行脚本'
-        ERROR
+        TEXT='NAStools 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -631,11 +606,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --restart always \
         jxxghp/nas-tools:latest
     if [ $? -eq 0 ]; then
-        TEXT='NAStools 安装成功'
-        INFO
+        TEXT='NAStools 安装成功' && INFO
     else
-        TEXT='NAStools 安装失败，请尝试重新运行脚本'
-        ERROR
+        TEXT='NAStools 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -674,8 +647,7 @@ choose_downloader(){
     ;;
     *)
     clear
-    TEXT='请输入正确数字 [1-6]'
-    ERROR
+    TEXT='请输入正确数字 [1-6]' && ERROR
     choose_downloader
     ;;
     esac
@@ -688,12 +660,10 @@ read -ep "PORT:" tr_port
 TEST_PORT=${tr_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    TEXT='端口被占用，请重新输入新端口'
-    ERROR
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     tr_web_port
 else
-    TEXT='设置成功！'
-    INFO
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -704,12 +674,10 @@ read -ep "PORT:" tr_port_torrent
 TEST_PORT=${tr_port_torrent}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    TEXT='端口被占用，请重新输入新端口'
-    ERROR
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     tr_port_torrent_i
 else
-    TEXT='设置成功！'
-    INFO
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -721,12 +689,12 @@ tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
 read -ep "USERNAME:" tr_username
 [[ -z "${tr_username}" ]] && tr_username="username"
-echo -e "${Green}设置成功！${Font}"
+TEXT='设置成功！' && INFO
 echo
 echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
 read -ep "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
-echo -e "${Green}设置成功！${Font}"
+TEXT='设置成功！' && INFO
 sleep 2
 
 clear
@@ -780,10 +748,9 @@ EOF
     cd ${config_dir}/transmission
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Transmission 安装成功${Font}"
+        TEXT='Transmission 安装成功' && INFO
     else
-        echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
-        exit 1
+        TEXT='Transmission 安装失败，请尝试重新运行脚本' && ERROR
     fi
 fi
 
@@ -806,10 +773,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
     --restart always \
     ddsderek/nas-tools-all-in-one:transmission-${BUILD_TIME}
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Transmission 安装成功${Font}"
+        TEXT='Transmission 安装成功' && INFO
     else
-        echo -e "${Red}Transmission 安装失败，请尝试重新运行脚本${Font}"
-        exit 1
+        TEXT='Transmission 安装失败，请尝试重新运行脚本' && ERROR
     fi
 fi
 }
@@ -822,12 +788,12 @@ tr_port_torrent_i
 echo -e "${Green}请输入Transmission Web 用户名（默认 username ）${Font}"
 read -ep "USERNAME:" tr_username
 [[ -z "${tr_username}" ]] && tr_username="username"
-echo -e "${Green}设置成功！${Font}"
+TEXT='设置成功！' && INFO
 echo
 echo -e "${Green}请输入Transmission Web 密码（默认 password ）${Font}"
 read -ep "PASSWORD:" tr_password
 [[ -z "${tr_password}" ]] && tr_password="password"
-echo -e "${Green}设置成功！${Font}"
+TEXT='设置成功！' && INFO
 sleep 2
 
 clear
@@ -881,9 +847,9 @@ EOF
     cd ${config_dir}/transmission_sk
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
+        TEXT='Transmission Skip Patch 安装成功' && INFO
     else
-        echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Transmission Skip Patch 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -907,9 +873,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
     --restart always \
     ddsderek/nas-tools-all-in-one:transmission_skip_patch-${BUILD_TIME}
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Transmission Skip Patch 安装成功${Font}"
+        TEXT='Transmission Skip Patch 安装成功' && INFO
     else
-        echo -e "${Red}Transmission Skip Patch 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Transmission Skip Patch 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -922,10 +888,10 @@ read -ep "PORT:" qb_port
 TEST_PORT=${qb_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     qb_web_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -936,10 +902,10 @@ read -ep "PORT:" qb_port_torrent
 TEST_PORT=${qb_port_torrent}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     qb_port_torrent_i
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -1001,9 +967,9 @@ EOF
     cd ${config_dir}/qbittorrent
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}qBittorrent 安装成功${Font}"
+        TEXT='qBittorrent 安装成功' && INFO
     else
-        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='qBittorrent 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1026,9 +992,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --hostname qbittorrent \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
     if [ $? -eq 0 ]; then
-        echo -e "${Green}qBittorrent 安装成功${Font}"
+        TEXT='qBittorrent 安装成功' && INFO
     else
-        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='qBittorrent 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1092,9 +1058,9 @@ EOF
     cd ${config_dir}/qbittorrent_sk
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}qBittorrent 安装成功${Font}"
+        TEXT='qBittorrent 安装成功' && INFO
     else
-        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='qBittorrent 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1117,9 +1083,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --hostname qbittorrent_sk \
         ddsderek/nas-tools-all-in-one:qbittorrent-${BUILD_TIME}
     if [ $? -eq 0 ]; then
-        echo -e "${Green}qBittorrent 安装成功${Font}"
+        TEXT='qBittorrent 安装成功' && INFO
     else
-        echo -e "${Red}qBittorrent 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='qBittorrent 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1172,8 +1138,7 @@ choose_mediaserver(){
     ;;
     *)
     clear
-    TEXT='请输入正确数字 [1-4]'
-    ERROR
+    TEXT='请输入正确数字 [1-4]' && ERROR
     choose_mediaserver
     ;;
     esac
@@ -1187,10 +1152,10 @@ read -ep "PORT:" plex_port
 TEST_PORT=${plex_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     plex_web_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -1256,9 +1221,9 @@ EOF
     cd ${config_dir}/plex
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Plex 安装成功${Font}"
+        TEXT='Plex 安装成功' && INFO
     else
-        echo -e "${Red}Plex 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Plex 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1276,9 +1241,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --restart always \
         plexinc/pms-docker
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Plex 安装成功${Font}"
+        TEXT='Plex 安装成功' && INFO
     else
-        echo -e "${Red}Plex 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Plex 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1291,10 +1256,10 @@ read -ep "PORT:" emby_port
 TEST_PORT=${emby_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     emby_web_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -1351,9 +1316,9 @@ EOF
     cd ${config_dir}/emby
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Emby 安装成功${Font}"
+        TEXT='Emby 安装成功' && INFO
     else
-        echo -e "${Red}Emby 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Emby 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1369,9 +1334,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --restart always \
         emby/embyserver:latest
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Emby 安装成功${Font}"
+        TEXT='Emby 安装成功' && INFO
     else
-        echo -e "${Red}Emby 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Emby 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1384,10 +1349,10 @@ read -ep "PORT:" jellyfin_port
 TEST_PORT=${jellyfin_port}
 port_if
 if [[ ${TEST_PORT_IF=} = '1' ]]; then
-    echo -e "${Red}端口被占用，请重新输入新端口${Font}"
+    TEXT='端口被占用，请重新输入新端口' && ERROR
     jellyfin_web_port
 else
-    echo -e "${Green}设置成功！${Font}"
+    TEXT='设置成功！' && INFO
 fi
 echo
 }
@@ -1441,9 +1406,9 @@ EOF
     cd ${config_dir}/jellyfin
     docker-compose up -d
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Jellyfin 安装成功${Font}"
+        TEXT='Jellyfin 安装成功' && INFO
     else
-        echo -e "${Red}Jellyfin 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Jellyfin 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1458,9 +1423,9 @@ if [[ ${docker_install_model} = 'cli' ]]; then
         --restart=always \
         jellyfin/jellyfin
     if [ $? -eq 0 ]; then
-        echo -e "${Green}Jellyfin 安装成功${Font}"
+        TEXT='Jellyfin 安装成功' && INFO
     else
-        echo -e "${Red}Jellyfin 安装失败，请尝试重新运行脚本${Font}"
+        TEXT='Jellyfin 安装失败，请尝试重新运行脚本' && ERROR
         exit 1
     fi
 fi
@@ -1484,7 +1449,7 @@ fix_basic_settings
 nastool_install
 downloader_install
 mediaserver_install
-echo -e "${Green}安装完成，接下来请进入Web界面设置${Font}"
+TEXT='安装完成，接下来请进入Web界面设置' && INFO
 exit 0
 }
 
@@ -1527,8 +1492,7 @@ manual_install(){
     ;;
     *)
     clear
-    TEXT='请输入正确数字 [1-5]'
-    ERROR
+    TEXT='请输入正确数字 [1-5]' && ERROR
     manual_install
     ;;
     esac
@@ -1573,8 +1537,7 @@ This is free software, licensed under the GNU General Public License.
         ;;
         *)
         clear
-        TEXT='请输入正确数字 [1-4]'
-        ERROR
+        TEXT='请输入正确数字 [1-4]' && ERROR
         main_return
         ;;
         esac
