@@ -1570,6 +1570,10 @@ main(){
     # 安装软件包
     package_installation
     # 清理命令行
+    # 旧配置兼容
+    if [ -d /etc/nastools_all_in_one ]; then
+        mv /etc/nastools_all_in_one /etc/videolab
+    fi
     clear
     main_return
 }
