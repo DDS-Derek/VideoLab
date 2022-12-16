@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# ———————————————————————————————————————————————————————————————————————————
 #  _   _    _    ____  _              _ 
 # | \ | |  / \  / ___|| |_ ___   ___ | |
 # |  \| | / _ \ \___ \| __/ _ \ / _ \| |
@@ -11,10 +10,7 @@
 #
 # This is free software, licensed under the GNU General Public License.
 #
-  BUILD_TIME=2022-12-03
-# ———————————————————————————————————————————————————————————————————————————
-
-
+BUILD_TIME=2022-12-03
 
 
 Blue="\033[34m"
@@ -1472,18 +1468,21 @@ manual_install(){
     . /etc/nastools_all_in_one/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     nastool_install
+    clear
     manual_install
     ;;
     3)
     . /etc/nastools_all_in_one/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     downloader_install
+    clear
     manual_install
     ;;
     4)
     . /etc/nastools_all_in_one/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     mediaserver_install
+    clear
     manual_install
     ;;
     5)
