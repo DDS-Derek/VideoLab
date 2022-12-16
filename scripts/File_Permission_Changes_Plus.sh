@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-. /etc/nastools_all_in_one/settings.sh
+. /etc/videolab/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
 Media_DIR=${media_dir}
 

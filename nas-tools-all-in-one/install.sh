@@ -347,14 +347,19 @@ fi
 if [ ! -d ${NEW_media_dir} ]; then
     mkdir -p ${NEW_media_dir}
 fi
-if [ ! -d /etc/nastools_all_in_one ]; then
-    mkdir -p /etc/nastools_all_in_one
+if [ ! -d /etc/videolab ]; then
+    # 旧配置兼容
+    if [ -d /etc/nastools_all_in_one ]; then
+        mv /etc/nastools_all_in_one /etc/videolab
+    else
+        mkdir -p /etc/videolab
+    fi
 fi
 if [ ! -f ${NEW_config_dir}/nastools_all_in_one ]; then
     touch ${NEW_config_dir}/nastools_all_in_one/basic_settings.sh
 fi
-if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
-    touch /etc/nastools_all_in_one/settings.sh
+if [ ! -f /etc/videolab/settings.sh ]; then
+    touch /etc/videolab/settings.sh
 fi
 cat > ${NEW_config_dir}/nastools_all_in_one/basic_settings.sh << EOF
 #!/usr/bin/env bash
@@ -372,14 +377,14 @@ media_dir=${NEW_media_dir}
 docker_install_model=${NEW_docker_install_model}
 
 EOF
-cat > /etc/nastools_all_in_one/settings.sh << EOF
+cat > /etc/videolab/settings.sh << EOF
 #!/usr/bin/env bash
 
 config_dir=${NEW_config_dir}
 
 EOF
 
-#. /etc/nastools_all_in_one/settings.sh
+#. /etc/videolab/settings.sh
 #. ${config_dir}/nastools_all_in_one/basic_settings.sh
 
 if [ $? -eq 0 ]; then
@@ -470,7 +475,7 @@ show_basic_settings(){
 
 fix_basic_settings(){
 clear
-if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
+if [ ! -f /etc/videolab/settings.sh ]; then
     get_id
     clear
     get_umask
@@ -487,7 +492,7 @@ if [ ! -f /etc/nastools_all_in_one/settings.sh ]; then
     clear
     show_basic_settings
 else
-    . /etc/nastools_all_in_one/settings.sh
+    . /etc/videolab/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     Old_PUID=${PUID}
     Old_PGID=${PGID}
@@ -551,7 +556,7 @@ get_nastool_port
 get_nastool_update
 sleep 2
 
-. /etc/nastools_all_in_one/settings.sh
+. /etc/videolab/settings.sh
 . ${config_dir}/nastools_all_in_one/basic_settings.sh
 if [ ! -d ${config_dir}/nas-tools ]; then
     mkdir -p ${config_dir}/nas-tools
@@ -1479,21 +1484,21 @@ manual_install(){
     manual_install
     ;;
     2)
-    . /etc/nastools_all_in_one/settings.sh
+    . /etc/videolab/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     nastool_install
     clear
     manual_install
     ;;
     3)
-    . /etc/nastools_all_in_one/settings.sh
+    . /etc/videolab/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     downloader_install
     clear
     manual_install
     ;;
     4)
-    . /etc/nastools_all_in_one/settings.sh
+    . /etc/videolab/settings.sh
     . ${config_dir}/nastools_all_in_one/basic_settings.sh
     mediaserver_install
     clear
