@@ -43,12 +43,20 @@ if [ ! -f ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Cha
         https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/VideoLab/master/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh
     if [ $? -eq 0 ]; then
         TEXT='下载File_Permission_Changes_Plus脚本成功' && INFO
+        TEXT='测试脚本' && INFO
+        /usr/bin/env bash ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh
+        if [ $? -eq 0 ]; then
+            TEXT='测试成功' && INFO
+        else
+            TEXT='测试失败' && ERROR
+            exit 1
+        fi
     else
         TEXT='下载File_Permission_Changes_Plus脚本失败' && ERROR
         exit 1
     fi
 else
-    TEXT='File_Permission_Changes_Plus以存在' && INFO
+    TEXT='File_Permission_Changes_Plus已存在' && INFO
 fi
 
 get_cron(){
@@ -57,12 +65,31 @@ read -ep "CRON:" NEW_CRON
 [[ -z "${NEW_CRON}" ]] && NEW_CRON="*/30 * * * *"
 }
 
-if [ ! -f ${config_dir}/scripts/File_Permission_Changes_Plus/cron.lock ]; then
+if crontab -l | grep -Eqi "File_Permission_Changes_Plus.sh"; then
+    TEXT='定时任务已存在' && INFO
+    echo -e "${Green}是否重新设置定时任务 [Y/n]（默认 n ）${Font}"
+    read -ep "CRON:" YN
+    [[ -z "${YN}" ]] && YN="n"
+    if [[ ${YN} == [Yy] ]]; then
+        (crontab -l | sed '/File_Permission_Changes_Plus.sh/d') | crontab -
+        get_cron
+        (crontab -l ; echo "${NEW_CRON} /usr/bin/env bash ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh") | crontab -
+        if [ $? -eq 0 ]; then
+            TEXT='定时任务设置成功' && INFO
+            crontab -l | grep -Ei "File_Permission_Changes_Plus.sh"
+        else
+            TEXT='定时任务设置失败' && ERROR
+            exit 1
+        fi
+    else
+        exit 0
+    fi
+else
     get_cron
     (crontab -l ; echo "${NEW_CRON} /usr/bin/env bash ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh") | crontab -
     if [ $? -eq 0 ]; then
         TEXT='定时任务设置成功' && INFO
-        touch ${config_dir}/scripts/File_Permission_Changes_Plus/cron.lock
+        crontab -l | grep -Ei "File_Permission_Changes_Plus.sh"
     else
         TEXT='定时任务设置失败' && ERROR
         exit 1
