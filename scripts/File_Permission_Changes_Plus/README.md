@@ -1,3 +1,3 @@
 ```
-curl -o install.sh https://ghproxy.com/https://github.com/DDS-Derek/VideoLab/raw/master/scripts/File_Permission_Changes_Plus/Prepare.sh && bash install.sh && rm install.sh
+curl -o Prepare.sh https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/VideoLab/master/scripts/File_Permission_Changes_Plus/Prepare.sh && bash Prepare.sh && rm Prepare.sh
 ```
