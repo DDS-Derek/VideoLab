@@ -58,10 +58,11 @@ read -ep "CRON:" NEW_CRON
 }
 
 if [ ! -f ${config_dir}/scripts/File_Permission_Changes_Plus/cron.lock ]; then
-    touch ${config_dir}/scripts/File_Permission_Changes_Plus/cron.lock
+    get_cron
     (crontab -l ; echo "${NEW_CRON} /usr/bin/env bash ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh") | crontab -
     if [ $? -eq 0 ]; then
         TEXT='定时任务设置成功' && INFO
+        touch ${config_dir}/scripts/File_Permission_Changes_Plus/cron.lock
     else
         TEXT='定时任务设置失败' && ERROR
         exit 1
