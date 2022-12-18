@@ -71,7 +71,7 @@ package_installation(){
     elif grep -Eq "openSUSE" /etc/*-release; then
         OSNAME='opensuse'
         zypper refresh
-        zypper install wget zip unzip curl lsof -y
+        zypper -n install wget zip unzip curl lsof
     elif grep -Eq "FreeBSD" /etc/*-release; then
         OSNAME='freebsd'
     elif grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
