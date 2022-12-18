@@ -70,19 +70,21 @@ package_installation(){
         OSNAME='OpenWRT'
         if ! which wget; then
             TEXT="未安装wget，请手动安装" && ERROR
-        fi
-        if ! which zip; then
-            TEXT="未安装zip，请手动安装" && ERROR
+            exit 1
         fi
         if ! which unzip; then
             TEXT="未安装unzip，请手动安装" && ERROR
+            exit 1
         fi
         if ! which curl; then
             TEXT="未安装curl，请手动安装" && ERROR
+            exit 1
         fi
         if ! which lsof; then
             TEXT="未安装lsof，请手动安装" && ERROR
+            exit 1
         fi
+        sleep 2
     elif grep -Eqi "QNAP" /etc/issue; then
         OSNAME='QNAP'
     elif grep -Eq "openSUSE" /etc/*-release; then
