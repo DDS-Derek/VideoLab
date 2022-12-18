@@ -30,7 +30,7 @@
 
 ![](https://file.ddsrem.in:998/application/hide.php?key=NDA1NXU2NGRZeWNYRzFRaWR5Mm5sMzAxMVAxcEIwQ2RTTUNMeG53WFYwZz0=)
 
-不准备支持的系统：
+## 不准备支持的系统
 1. MacOS
 2. Unraid
 3. FreeNas/TrueNAS
