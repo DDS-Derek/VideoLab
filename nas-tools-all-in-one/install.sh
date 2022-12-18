@@ -66,6 +66,23 @@ package_installation(){
         ipkg update
         ipkg install lsof
         ipkg install unzip
+    elif [ -f /etc/openwrt_release ]; then
+        OSNAME='OpenWRT'
+        if ! which wget; then
+            TEXT="未安装wget，请手动安装" && ERROR
+        fi
+        if ! which zip; then
+            TEXT="未安装zip，请手动安装" && ERROR
+        fi
+        if ! which unzip; then
+            TEXT="未安装unzip，请手动安装" && ERROR
+        fi
+        if ! which curl; then
+            TEXT="未安装curl，请手动安装" && ERROR
+        fi
+        if ! which lsof; then
+            TEXT="未安装lsof，请手动安装" && ERROR
+        fi
     elif grep -Eqi "QNAP" /etc/issue; then
         OSNAME='QNAP'
     elif grep -Eq "openSUSE" /etc/*-release; then
@@ -74,6 +91,8 @@ package_installation(){
         zypper -n install wget zip unzip curl lsof
     elif grep -Eq "FreeBSD" /etc/*-release; then
         OSNAME='freebsd'
+        TEXT='此系统无法使用此脚本' && ERROR
+        exit 1
     elif grep -Eqi "CentOS" /etc/issue || grep -Eq "CentOS" /etc/*-release; then
         OSNAME='centos'
         yum install -y wget zip unzip curl lsof
