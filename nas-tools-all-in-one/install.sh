@@ -64,8 +64,12 @@ package_installation(){
             TEXT='IPKG 已安装' && INFO
         fi
         ipkg update
-        ipkg install lsof
-        ipkg install unzip
+        if ! which lsof; then
+            ipkg install lsof
+        fi
+        if ! which unzip; then
+            ipkg install unzip
+        fi
     elif [ -f /etc/openwrt_release ]; then
         OSNAME='OpenWRT'
         if ! which wget; then
