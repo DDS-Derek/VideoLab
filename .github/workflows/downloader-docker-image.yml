@@ -40,7 +40,7 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:aria2-${{ steps.date.outputs.today }}
+             ${{ secrets.DOCKER_USERNAME }}/videolab:aria2-${{ steps.date.outputs.today }}
 
   qbittorrent:
     name: Build qBittorrent
@@ -77,7 +77,7 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent-${{ steps.date.outputs.today }}
+             ${{ secrets.DOCKER_USERNAME }}/videolab:qbittorrent-${{ steps.date.outputs.today }}
 
   qbittorrent_skip_patch:
     name: Build qBittorrent_Skip_Patch
@@ -115,7 +115,7 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:qbittorrent_skip_patch-${{ steps.date.outputs.today }}
+             ${{ secrets.DOCKER_USERNAME }}/videolab:qbittorrent_skip_patch-${{ steps.date.outputs.today }}
 
   transmission:
     name: Build Transmission
@@ -153,7 +153,7 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission-${{ steps.date.outputs.today }}
+             ${{ secrets.DOCKER_USERNAME }}/videolab:transmission-${{ steps.date.outputs.today }}
 
   transmission_skip_patch:
     name: Build Transmission_Skip_Patch
@@ -191,4 +191,4 @@ jobs:
             linux/arm64/v8
           push: true
           tags: |
-             ${{ secrets.DOCKER_USERNAME }}/nas-tools-all-in-one:transmission_skip_patch-${{ steps.date.outputs.today }}
+             ${{ secrets.DOCKER_USERNAME }}/videolab:transmission_skip_patch-${{ steps.date.outputs.today }}
