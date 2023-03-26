@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# bash nginx cn mirrors.ustc.edu.cn
+
+Green="\033[32m"
+Red="\033[31m"
+Yellow='\033[33m'
+Font="\033[0m"
+INFO="[${Green}INFO${Font}]"
+ERROR="[${Red}ERROR${Font}]"
+WARN="[${Yellow}WARN${Font}]"
+INFO(){
+echo -e "${INFO} ${1}"
+}
+ERROR(){
+echo -e "${ERROR} ${1}"
+}
+WARN(){
+echo -e "${WARN} ${1}"
+}
+
+INSTALL_SOURCE=$1
+ALPINE_MIRROR=$2
+
+if [ ! -n "$(which nginx)" ]; then
+    INFO "开始安装 Nginx"
+    if [[ "${INSTALL_SOURCE}" = 'cn' || "${INSTALL_SOURCE}" = 'CN' ]]; then
+        if [ "${ALPINE_MIRROR}" = "" ]; then
+            WARN "未指定国内软件源，使用默认清华源安装软件"
+            ALPINE_MIRROR="mirrors.ustc.edu.cn"
+        fi
+        sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_MIRROR}/g" /etc/apk/repositories
+        apk update -f
+        if [ $? -ne 0 ]; then
+            ERROR "更换国内源失败"
+        else
+            INFO "更换国内源成功"
+        fi
+    fi
+    apk add --no-cache nginx
+    if [ $? -ne 0 ]; then
+        ERROR "Nginx 安装失败"
+    else
+        INFO "Nginx 安装成功"
+    fi
+fi
