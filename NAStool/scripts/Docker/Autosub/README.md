@@ -1,3 +1,11 @@
+1. 进入容器
+
+```bash
+docker exec -it --user nt nas-tools /bin/bash
+```
+
+2. 选择脚本安装
+
 安装并下载tiny模型
 ```bash
 bash <(wget --no-check-certificate -qO- 'https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/Docker/Autosub/install') tiny
