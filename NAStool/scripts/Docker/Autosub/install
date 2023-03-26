@@ -37,6 +37,7 @@ INFO "开始编译安装 whisper.cpp"
 INFO "下载 whisper.cpp 源码"
 if [ -d /config/whisper.cpp ]; then
     ERROR "/config/whisper.cpp 目录已存在，请清除后重新执行脚本。"
+    exit 1
 fi
 git clone -b master ${whisper_cpp_url} /config/whisper.cpp --depth=1
 if [ $? -ne 0 ]; then
