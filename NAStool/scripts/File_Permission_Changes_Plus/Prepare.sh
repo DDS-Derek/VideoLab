@@ -47,7 +47,7 @@ fi
 if [ ! -f ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh ]; then
     curl -o \
         ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh \
-        https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/VideoLab/NAStool/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh
+        https://ghproxy.com/https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh
     if [ $? -eq 0 ]; then
         INFO '下载File_Permission_Changes_Plus脚本成功\n测试脚本'
         /usr/bin/env bash ${config_dir}/scripts/File_Permission_Changes_Plus/File_Permission_Changes_Plus.sh

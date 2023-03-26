@@ -6,7 +6,7 @@
 #
 # Thanks：https://blog.csdn.net/qq_45698148/article/details/120064768
 #         https://blog.csdn.net/jks212454/article/details/124700284
-# Use：curl -o File_Permission_Changes.sh https://ghproxy.com/https://raw.githubusercontent.com/DDS-Derek/nas-tools-all-in-one/master/scripts/File_Permission_Changes.sh
+# Use：curl -o File_Permission_Changes.sh https://ghproxy.com/https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/File_Permission_Changes/File_Permission_Changes.sh
 #      bash File_Permission_Changes.sh
 #
 #
