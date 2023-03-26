@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+Green="\033[32m"
+Red="\033[31m"
+Yellow='\033[33m'
+Font="\033[0m"
+INFO="[${Green}INFO${Font}]"
+ERROR="[${Red}ERROR${Font}]"
+WARN="[${Yellow}WARN${Font}]"
+INFO(){
+echo -e "${INFO} ${1}"
+}
+ERROR(){
+echo -e "${ERROR} ${1}"
+}
+WARN(){
+echo -e "${WARN} ${1}"
+}
+
