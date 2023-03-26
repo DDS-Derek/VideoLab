@@ -20,7 +20,7 @@ echo -e "${WARN} ${1}"
 MODELS=$1
 INSTALL_SOURCE=$2
 
-if [ "${ALPINE_MIRROR}" = "" ]; then
+if [ "${MODELS}" = "" ]; then
     WARN "未指定模型 ，默认使用 small 模型"
     MODELS="small"
 fi
