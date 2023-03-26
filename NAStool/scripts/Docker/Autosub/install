@@ -20,6 +20,11 @@ echo -e "${WARN} ${1}"
 MODELS=$1
 INSTALL_SOURCE=$2
 
+if [ "${ALPINE_MIRROR}" = "" ]; then
+    WARN "未指定模型 ，默认使用 small 模型"
+    MODELS="small"
+fi
+
 if [[ "${INSTALL_SOURCE}" = 'cn' || "${INSTALL_SOURCE}" = 'CN' ]]; then
     whisper_cpp_url=https://ghproxy.com/https://github.com/ggerganov/whisper.cpp.git
     sed -i "s/dl-cdn.alpinelinux.org/${ALPINE_MIRROR}/g" /etc/apk/repositories
@@ -30,6 +35,9 @@ fi
 
 INFO "开始编译安装 whisper.cpp"
 INFO "下载 whisper.cpp 源码"
+if [ -d /config/whisper.cpp ]; then
+    ERROR "/config/whisper.cpp 目录已存在，请清除后重新执行脚本。"
+fi
 git clone -b master ${whisper_cpp_url} /config/whisper.cpp --depth=1
 if [ $? -ne 0 ]; then
     ERROR "whisper.cpp 源码下载失败"
