@@ -20,9 +20,9 @@ echo -e "${WARN} ${1}"
 MODELS=$1
 INSTALL_SOURCE=$2
 
-if [ "${MODELS}" = "" ]; then
-    WARN "未指定模型 ，默认使用 small 模型"
-    MODELS="small"
+if fdisk -l > /dev/null 2>&1; then
+    WARN "请在容器内执行本脚本"
+    exit 1
 fi
 
 if [[ "${INSTALL_SOURCE}" = 'cn' || "${INSTALL_SOURCE}" = 'CN' ]]; then
@@ -31,6 +31,11 @@ if [[ "${INSTALL_SOURCE}" = 'cn' || "${INSTALL_SOURCE}" = 'CN' ]]; then
     apk update -f
 else
     whisper_cpp_url=https://github.com/ggerganov/whisper.cpp.git
+fi
+
+if [ "${MODELS}" = "" ]; then
+    WARN "未指定模型 ，默认使用 small 模型"
+    MODELS="small"
 fi
 
 INFO "开始编译安装 whisper.cpp"
@@ -45,7 +50,6 @@ if [ $? -ne 0 ]; then
     exit 1
 else
     INFO "whisper.cpp 源码下载成功"
-    cd /config/whisper.cpp
     INFO "安装编译软件包"
     sudo apk add --no-cache build-base sdl2-dev alsa-utils
     if [ $? -ne 0 ]; then
@@ -53,8 +57,9 @@ else
         exit 1
     else
         INFO "编译软件包安装成功"
-        echo "CFLAGS += -D_POSIX_C_SOURCE=199309L" > Makefile.NT
         INFO "开始编译"
+        cd /config/whisper.cpp
+        echo "CFLAGS += -D_POSIX_C_SOURCE=199309L" > Makefile.NT
         make -f Makefile -f Makefile.NT
         if [ $? -ne 0 ]; then
             ERROR "whisper.cpp 编译安装失败"
