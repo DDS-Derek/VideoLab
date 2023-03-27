@@ -19,10 +19,18 @@ echo -e "${WARN} ${1}"
 
 MODELS=$1
 INSTALL_SOURCE=$2
+INIT=$3
 
 if fdisk -l > /dev/null 2>&1; then
-    WARN "请在容器内执行本脚本"
+    ERROR "请在容器内执行本脚本"
     exit 1
+fi
+
+if [[ "${INIT}" = "yes" || "${INIT}" = "true" ]]; then
+    if [ -d /config/whisper.cpp ]; then
+        INFO "whisper.cpp 以安装"
+        exit 0
+    fi
 fi
 
 if [[ "${INSTALL_SOURCE}" = 'cn' || "${INSTALL_SOURCE}" = 'CN' ]]; then
