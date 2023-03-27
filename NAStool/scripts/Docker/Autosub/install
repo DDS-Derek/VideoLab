@@ -21,7 +21,7 @@ MODELS=$1
 INSTALL_SOURCE=$2
 INIT=$3
 
-if fdisk -l > /dev/null 2>&1; then
+if [ "$(fdisk -l)" != "" ]; then
     ERROR "请在容器内执行本脚本"
     exit 1
 fi
