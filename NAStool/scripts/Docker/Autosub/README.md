@@ -55,13 +55,3 @@ bash <(wget --no-check-certificate -qO- 'https://github.com/DDS-Derek/VideoLab/r
 ```bash
 bash <(wget --no-check-certificate -qO- 'https://ghproxy.com/https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/Docker/Autosub/install') large cn
 ```
-
-安装并下载large-v1模型
-```bash
-bash <(wget --no-check-certificate -qO- 'https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/Docker/Autosub/install') large-v1
-```
-
-安装并下载large-v1模型且使用国内源
-```bash
-bash <(wget --no-check-certificate -qO- 'https://ghproxy.com/https://github.com/DDS-Derek/VideoLab/raw/master/NAStool/scripts/Docker/Autosub/install') large-v1 cn
-```
