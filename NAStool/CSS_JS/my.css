@@ -1,0 +1,59 @@
+#toppic.can {background:center;}/*Clear Bottom Pic*/
+
+/*背景图片等*/
+.bg-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: auto;
+    background: url('https://file.ddsrem.in:998/i/2023/03/24/z297us.webp') center / cover no-repeat;
+}
+body {
+    opacity: 0.85;
+}
+
+/*用于手机端图片背景，如果图片相同需要特殊优化*/
+@media(max-width: 768px) {
+    .bg-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: auto;
+        background: url('https://file.ddsrem.in:998/i/2023/03/24/z4mth3.webp') center / cover no-repeat;
+    }
+    body {
+        opacity: 0.85;
+    }
+}
+table.mainouter{filter:alpha(opacity=85);opacity:0.85;}
+
+/*换个头像*/
+div>a>svg.icon-tabler-user {
+  /*头像的链接,可以自己改*/
+  background-image: url('https://file.ddsrem.in:998/i/2023/03/24/zkai47.webp');
+  background-size: contain;
+  width: 36px!important;
+  height: 36px!important;
+  border-radius: 15%;
+}
+div>a>svg.icon-tabler-user>* {
+  visibility: hidden;
+}
+div>a>svg.icon-tabler-user:hover {
+  transform: scale(1.2);
+}
+
+/*网站字体*/
+/*原则上你可以设置多个字体，然后在不同的部位使用不同的字体*/
+@font-face{
+    font-family:btfFont;
+    src:
+    url(https://blog.ddsrem.com/upload/2023/03/13.woff2) format('woff2')
+}
+body{
+    font-family:"btfFont" !important
+}
