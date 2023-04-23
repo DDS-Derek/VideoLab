@@ -8,7 +8,7 @@
     right: 0;
     bottom: 0;
     overflow: auto;
-    background: url('https://file.ddsrem.in:998/i/2023/03/24/z297us.webp') center / cover no-repeat;
+    background: url('https://file.ddsrem.in:998/random/api-anime.php') center / cover no-repeat;
 }
 body {
     opacity: 0.85;
@@ -23,7 +23,7 @@ body {
         right: 0;
         bottom: 0;
         overflow: auto;
-        background: url('https://file.ddsrem.in:998/i/2023/03/24/z4mth3.webp') center / cover no-repeat;
+        background: url('https://file.ddsrem.in:998/random/api-anime-mobile.php') center / cover no-repeat;
     }
     body {
         opacity: 0.85;
